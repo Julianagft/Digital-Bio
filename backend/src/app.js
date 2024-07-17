@@ -1,17 +1,32 @@
-const express = require('express');
+import express from "express";
+import userRoutes from "./routes/userRoutes.js";
+// import authMiddleware from "./middlewares/authMiddleware.js";
+// import authRoutes from "./routes/authRoutes.js";
+import cors from 'cors';
+
 const app = express();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const userRoutes = require('./routes/userRoutes');
-const linkRoutes = require('./routes/linkRoutes');
 
 app.use(express.json());
 
-app.use('/api/users', userRoutes);
-app.use('/api/links', linkRoutes);
+app.use(cors());
 
-const PORT = process.env.PORT || 3000;
+app.get("/", (req, resp) => {
+    resp.json({ message: "Rodando com sucesso!" });
+})
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// app.use('/auth', authRoutes)
+
+app.use("/users", userRoutes);
+console.log()
+
+app.listen(8080, () => {
+  console.log("estou rodando na porta 8080!");
 });
+
+
+
+
+
+
+
+

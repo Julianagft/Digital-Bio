@@ -3,13 +3,13 @@ import pg from "pg";
 const {Pool} = pg;
 
 export const pool = new Pool({
-  host: "ep-calm-sea-a5tvx5qz-pooler.us-east-2.aws.neon.tech",
-  port: 5432,
-  user: "pipoca_owner",
-  password: "onNPGam1Y0ME",
-  database: "projeto",
-  max: 100,
-  min: 10,
-  ssl: true,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  max: process.env.DB_MAX,
+  min: process.env.DB_MIN,
+  ssl: true, // Convert string to boolean
 });
 
