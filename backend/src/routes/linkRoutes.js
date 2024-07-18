@@ -1,8 +1,18 @@
-const express = require('express');
-const router = express.Router();
-const linkController = require('../controllers/linkController');
+import express from 'express';
+import LinkRepository from '../repositories/linkRepository.js';
+import LinkService from '../services/linkService.js';
+import LinkController from '../controllers/linkController.js';
 
-// Aqui você pode adicionar as rotas para os links, por exemplo:
-// router.post('/add', linkController.addLink);
+const linkRoutes = express.Router();
 
-module.exports = router;
+const linkRepository = new LinkRepository();
+const linkService = new LinkService(linkRepository);
+const linkController = new LinkController(linkService);
+
+linkRoutes.post('/', linkController.create);
+linkRoutes.get('/', linkController.listAll);
+linkRoutes.get('/:id', linkController.findById);
+linkRoutes.put('/:id', linkController.updateLink);
+linkRoutes.delete('/:id', linkController.deleteLink);
+
+export default linkRoutes;
