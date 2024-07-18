@@ -1,5 +1,5 @@
 class UserController {
-  
+
   constructor(userService) {
     this.userService = userService;
   }
@@ -24,21 +24,19 @@ class UserController {
     return response.json(usuarioEncontrado);
   };
 
-  updateUser = (request, response) => {
+  updateUser = async (request, response) => {
     const id = request.params.id;
     const newData = request.body;
 
-    console.log({newData})
-
-    const usuarioAtualizado = this.userService.updateUser(id, newData);
+    const usuarioAtualizado = await this.userService.updateUser(id, newData);
 
     return response.json(usuarioAtualizado); 
   };
 
-  deleteUser = (request, response) => {
+  deleteUser = async (request, response) => {
     const id = request.params.id;
 
-    this.userService.deleteUser(id); 
+    await this.userService.deleteUser(id); 
     return response.json({ message: "Usuário deletado com sucesso!" });
 
   }

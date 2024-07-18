@@ -20,15 +20,15 @@ class UserService {
       return usuarioEncontrado;
     };
 
-    updateUser = (id, newData) => {
-      const usuarioAtualizado = this.userRepository.updateUser(id, newData);
+    updateUser = async (id, newData) => {
+      const usuarioAtualizado = await  this.userRepository.updateUser(id, newData);
 
-      return {message: "Usuario atualizado com sucesso!", usuarioAtualizado} ;
+      return {message: "Usuario atualizado com sucesso!", usuarioAtualizado};
     }
 
-    deleteUser = (id) => {
+    deleteUser = async (id) => {
       
-      const usuarioDeletado = this.userRepository.deleteUser(id)
+      await this.userRepository.deleteUser(id)
 
       return {message: "Usuário deletado com sucesso!"}
     }
