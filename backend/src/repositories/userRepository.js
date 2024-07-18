@@ -36,7 +36,6 @@ class UserRepository {
           
         if (ExistentEmail) {
           throw new Error('O email fornecido já está sendo usado por outro usuário.');
-          return 
         }
 
         if (ExistentUsername) {

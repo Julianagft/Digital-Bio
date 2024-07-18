@@ -1,4 +1,5 @@
 import express from "express";
+import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import linkRoutes from "./routes/linkRoutes.js";
 import cors from 'cors';
@@ -12,6 +13,7 @@ app.get("/", (req, resp) => {
     resp.json({ message: "Rodando com sucesso!" });
 });
 
+app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/links", linkRoutes);
 

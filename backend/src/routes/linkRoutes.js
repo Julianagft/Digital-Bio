@@ -9,8 +9,9 @@ const linkRepository = new LinkRepository();
 const linkService = new LinkService(linkRepository);
 const linkController = new LinkController(linkService);
 
-linkRoutes.post('/', linkController.create);
+linkRoutes.post('/:userId', linkController.create);
 linkRoutes.get('/', linkController.listAll);
+linkRoutes.get('/users/:userId', linkController.listAllByUser);
 linkRoutes.get('/:id', linkController.findById);
 linkRoutes.put('/:id', linkController.updateLink);
 linkRoutes.delete('/:id', linkController.deleteLink);
