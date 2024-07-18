@@ -3,7 +3,7 @@ import { pool } from "../config/db.js";
 
 class UserRepository {
   
-    async checkEmailExistence(email) {
+    async checkExistentEmail(email) {
         const query = {
           text: 'SELECT * FROM users WHERE email = $1',
           values: [email]
@@ -12,10 +12,10 @@ class UserRepository {
         return result.rows.length > 0;
       }
 
-    async checkUserNameExistente(userName) {
+    async checkExistentUsername(username) {
         const query = {
-          text: 'SELECT * FROM users WHERE userName = $1',
-          values: [userName]
+          text: 'SELECT * FROM users WHERE username = $1',
+          values: [username]
         };
         const result = await pool.query(query);
         return result.rows.length > 0;
@@ -23,21 +23,23 @@ class UserRepository {
       
       create = async (user) => {
     
-        if (!user.name || !user.email || !user.userName || !user.password) {  
+        if (!user.name || !user.email || !user.username || !user.password ) {  
           throw new Error('O usuário deve ter um nome, um email e uma senha.');
         }
     
-        if (user.password.length < 8 || !/[A-Z]/.test(user.password)) {
-          throw new Error('A senha deve ter no mínimo 8 caracteres e deve conter pelo menos uma letra maiúscula.');
+        if (user.password.length < 8 || !/[A-Z]/.test(user.password) || !/\d/.test(user.password) || !/[!@#$%^&*(),.?":{}|<>]/.test(user.password)) {
+          throw new Error('A senha deve ter no mínimo 8 caracteres, deve conter pelo menos uma letra maiúscula, um número e um caractere especial (ex: #,*,!...).');
         }
       
-        const emailExistente = await this.checkEmailExistence(user.email);
+        const ExistentEmail = await this.checkExistentEmail(user.email);
+        const ExistentUsername = await this.checkExistentUsername(user.username);
           
-        if (emailExistente) {
+        if (ExistentEmail) {
           throw new Error('O email fornecido já está sendo usado por outro usuário.');
+          return 
         }
 
-        if (checkUserNameExistente) {
+        if (ExistentUsername) {
           throw new Error('Nome de usuário já está sendo utilizado.');
         }
 
@@ -78,42 +80,51 @@ class UserRepository {
         }
       };
   
-    updateUser = async (id, newData, currentUser) => {
-      const user = await this.collection.findUnique({
-        where: { id: Number(id) }
+    updateUser = async (id, newData) => {
+
+      const user = await prisma.users.findUnique({
+        where: { id: Number(id) },
       });
-  
+    
       if (!user) {
-        throw new Error('Usuário não encontrado!');
+        throw new Error("Usuário não encontrado!");
       }
   
       try {
-        const updatedUser = await this.collection.update({
+
+        const updatedUser = await prisma.users.update({
           where: { id: Number(id) },
           data: newData
-        });
+        })
+
         return updatedUser;
+
       } catch (error) {
-        throw new Error('Erro ao atualizar usuário: ' + error.message);
+      
+        throw new Error("Erro ao atualizar usuário: ", error.message);
+        
       }
     };
   
     deleteUser = async (id) => {
-      const user = await this.collection.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: Number(id) }
       });
   
       if (!user) {
-        throw new Error('Usuário não encontrado!');
+        throw new Error("Usuário não encontrado!");
       }
   
       try {
-        await this.collection.delete({
+
+        await prisma.users.delete({
           where: { id: Number(id) }
-        });
-        return { message: 'Usuário deletado com sucesso!' };
+        })
+
+        return { message: 'Usuário deletado com sucesso!' }
+
       } catch (error) {
-        throw new Error('Erro ao deletar usuário: ' + error.message);
+        throw new Error("Erro ao deletar usuário: ", error.message);
       }
     };
   }
