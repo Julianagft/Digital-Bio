@@ -1,4 +1,5 @@
-import {prisma} from '../config/prisma.js';
+import { prisma } from "../config/prisma.js";
+import { pool } from "../config/db.js";
 
 class UserRepository {
   
@@ -10,14 +11,23 @@ class UserRepository {
         const result = await pool.query(query);
         return result.rows.length > 0;
       }
+
+    async checkUserNameExistente(userName) {
+        const query = {
+          text: 'SELECT * FROM users WHERE userName = $1',
+          values: [userName]
+        };
+        const result = await pool.query(query);
+        return result.rows.length > 0;
+      }
       
       create = async (user) => {
     
-        if (!user.nome || !user.email || !user.senha) {  
+        if (!user.name || !user.email || !user.userName || !user.password) {  
           throw new Error('O usuário deve ter um nome, um email e uma senha.');
         }
     
-        if (user.senha.length < 8 || !/[A-Z]/.test(user.senha)) {
+        if (user.password.length < 8 || !/[A-Z]/.test(user.password)) {
           throw new Error('A senha deve ter no mínimo 8 caracteres e deve conter pelo menos uma letra maiúscula.');
         }
       
@@ -26,7 +36,11 @@ class UserRepository {
         if (emailExistente) {
           throw new Error('O email fornecido já está sendo usado por outro usuário.');
         }
-    
+
+        if (checkUserNameExistente) {
+          throw new Error('Nome de usuário já está sendo utilizado.');
+        }
+
         const resp = await prisma.users.create({
           data: user,
         });
@@ -71,10 +85,6 @@ class UserRepository {
   
       if (!user) {
         throw new Error('Usuário não encontrado!');
-      }
-  
-      if (currentUser.id !== id && currentUser.papel !== 'admin') {
-        throw new Error('Você só pode atualizar suas próprias informações!');
       }
   
       try {
