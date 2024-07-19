@@ -8,13 +8,13 @@ datasource db {
 }
 
 model links {
-  id       Int     @id @default(autoincrement())
+  id       Int     @id(map: "Link_pkey") @default(autoincrement())
   url      String
   title    String
   isActive Boolean @default(true)
   isPublic Boolean @default(true)
   userId   Int
-  users    users   @relation(fields: [userId], references: [id])
+  users    users   @relation(fields: [userId], references: [id], map: "Link_userId_fkey")
 }
 
 model users {

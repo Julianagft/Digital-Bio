@@ -1,4 +1,5 @@
 import express from "express";
+import authMiddleware from "./middleware/authMiddleware.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import linkRoutes from "./routes/linkRoutes.js";
@@ -14,8 +15,8 @@ app.get("/", (req, resp) => {
 });
 
 app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/links", linkRoutes);
+app.use("/users", authMiddleware, userRoutes);
+app.use("/links", authMiddleware, linkRoutes);
 
 app.listen(8081, () => {
   console.log("estou rodando na porta 8081!");
