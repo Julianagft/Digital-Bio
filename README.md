@@ -98,6 +98,6 @@ Substitua `usuario`, `senha`, `nome_do_banco` e `sua_chave_secreta` pelos valore
 
 ---
 
-frontend:projeto-final-fs24.vercel.app
+frontend: https://projeto-final-fs24.vercel.app/
 
 backend: https://projeto-final-fs24.onrender.com/
