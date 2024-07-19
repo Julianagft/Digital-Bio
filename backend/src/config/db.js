@@ -10,6 +10,6 @@ export const pool = new Pool({
   database: process.env.DB_NAME,
   max: process.env.DB_MAX,
   min: process.env.DB_MIN,
-  ssl: true, // Convert string to boolean
+  ssl: true, 
 });
 

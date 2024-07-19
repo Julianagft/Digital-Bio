@@ -8,7 +8,7 @@ class LinkController {
     try {
       const result = await this.linkService.create(link);
       return response.status(200).json(result);
-
+      
     } catch (error) {
       return response.status(500).json({ error: error.message });
     }
@@ -17,6 +17,18 @@ class LinkController {
   listAll = async (request, response) => {
     try {
       const links = await this.linkService.listAll();
+      return response.json(links);
+
+    } catch (error) {
+      return response.status(500).json({ error: error.message });
+    }
+  };
+  
+  listAllByUser = async (request, response) => {
+    const userId = request.params.userId;
+
+    try {
+      const links = await this.linkService.listAllByUser(userId );
       return response.json(links);
 
     } catch (error) {
@@ -38,7 +50,7 @@ class LinkController {
   updateLink = async (request, response) => {
     const id = request.params.id;
     const newData = request.body;
-   
+    
     try {
       const updatedLink = await this.linkService.updateLink(id, newData);
       return response.json(updatedLink);
@@ -53,7 +65,6 @@ class LinkController {
     try {
       await this.linkService.deleteLink(id);
       return response.json({ message: "Link deletado com sucesso!" });
-      
     } catch (error) {
       return response.status(500).json({ error: error.message });
     }
