@@ -42,9 +42,9 @@ const LoginPage = () => {
         </div>
         <div className="w-1/2 bg-[#fff] flex flex-col">
           <nav className="flex justify-center space-x-6 text-[#1e3a8a] p-8">
-            <a href="#" className="font-semibold">Início</a>
-            <a href="#">Sobre nós</a>
-            <a href="#">Contato</a>
+            <a href="/" className="font-semibold">Início</a>
+            <a href="/about">Sobre nós</a>
+            <a href="/contact">Contato</a>
             <a href="#">Tema</a>
           </nav>
           <div className="flex flex-grow justify-center items-center">
