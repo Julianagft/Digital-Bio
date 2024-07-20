@@ -96,6 +96,8 @@ Substitua `usuario`, `senha`, `nome_do_banco` e `sua_chave_secreta` pelos valore
 4. Push para a branch (`git push origin feature/nova-feature`)
 5. Abra um Pull Request
 
-
-
 ---
+
+frontend: https://projeto-final-fs24.vercel.app/
+
+backend: https://projeto-final-fs24.onrender.com/
