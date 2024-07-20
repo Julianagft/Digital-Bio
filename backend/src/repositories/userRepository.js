@@ -2,7 +2,6 @@ import { prisma } from "../config/prisma.js";
 import { pool } from "../config/db.js";
 
 class UserRepository {
-  
     async checkExistentEmail(email) {
         const query = {
           text: 'SELECT * FROM users WHERE email = $1',
@@ -10,7 +9,7 @@ class UserRepository {
         };
         const result = await pool.query(query);
         return result.rows.length > 0;
-      }
+    }
 
     async checkExistentUsername(username) {
         const query = {
@@ -19,10 +18,9 @@ class UserRepository {
         };
         const result = await pool.query(query);
         return result.rows.length > 0;
-      }
+    }
       
-      create = async (user) => {
-    
+    create = async (user) => {
         if (!user.name || !user.email || !user.username || !user.password ) {  
           throw new Error('O usuário deve ter um nome, um email e uma senha.');
         }
@@ -47,23 +45,19 @@ class UserRepository {
         });
       
         return resp;
-      };
+    };
     
-      listAll = async () => {
-    
+    listAll = async () => {
         const resp = await prisma.users.findMany();
-    
         try {
           return resp;
-    
         } catch (error) {
           console.error('Erro ao obter usuários:', error.message);
           throw error;
         }
-      };
+    };
     
-      findById = async (id) => {
-    
+    findById = async (id) => {
         try {
           const resp = await prisma.users.findUnique({
             where: {
@@ -72,15 +66,13 @@ class UserRepository {
           });
     
           return resp;
-    
         } catch (error) {
           console.error('Erro ao obter usuário pelo ID:', error.message);
           throw error;
         }
-      };
+    };
   
     updateUser = async (id, newData) => {
-
       const user = await prisma.users.findUnique({
         where: { id: Number(id) },
       });
@@ -90,21 +82,16 @@ class UserRepository {
       }
   
       try {
-
         const updatedUser = await prisma.users.update({
           where: { id: Number(id) },
           data: newData
-        })
+        });
 
         return updatedUser;
-
       } catch (error) {
-      
         throw new Error("Erro ao atualizar usuário: ", error.message);
-        
       }
     };
-   
     deleteUser = async (id) => {
       const user = await prisma.users.findUnique({
         where: { id: Number(id) }
@@ -115,17 +102,15 @@ class UserRepository {
       }
   
       try {
-
         await prisma.users.delete({
           where: { id: Number(id) }
-        })
+        });
 
-        return { message: 'Usuário deletado com sucesso!' }
-
+        return { message: 'Usuário deletado com sucesso!' };
       } catch (error) {
         throw new Error("Erro ao deletar usuário: ", error.message);
       }
     };
-  }
-  
-  export default UserRepository;
+}
+
+export default UserRepository;
