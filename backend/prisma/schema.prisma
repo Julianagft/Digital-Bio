@@ -1,27 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-model User {
-  id       Int      @id @default(autoincrement())
-  name     String
-  email    String   @unique
-  username String   @unique
-  password String
-  links    Link[]
-}
-
-model Link {
-  id       Int      @id @default(autoincrement())
+model links {
+  id       Int     @id(map: "Link_pkey") @default(autoincrement())
   url      String
   title    String
-  isActive Boolean  @default(true)
-  isPublic Boolean  @default(true)
+  isActive Boolean @default(true)
+  isPublic Boolean @default(true)
   userId   Int
-  user     User     @relation(fields: [userId], references: [id])
+  users    users   @relation(fields: [userId], references: [id], map: "Link_userId_fkey")
+}
+
+model users {
+  id       Int     @id(map: "User_pkey") @default(autoincrement())
+  name     String
+  email    String  @unique(map: "User_email_key")
+  username String  @unique(map: "User_username_key")
+  password String
+  links    links[]
 }
