@@ -28,7 +28,7 @@ class LinkController {
     const userId = request.params.userId;
 
     try {
-      const links = await this.linkService.listAllByUser(userId );
+      const links = await this.linkService.listAllByUser(userId);
       return response.json(links);
 
     } catch (error) {
