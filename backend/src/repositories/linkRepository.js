@@ -33,7 +33,7 @@ class LinkRepository {
     return await prisma.links.findUnique({ where: { id: parseInt(id) } });
   };
 
-  async updateLink(id, newData) {
+  updateLink = async (id, newData) => {
     const parsedId = parseInt(id);
     console.log("Repository: Updating link with ID:", parsedId);
 

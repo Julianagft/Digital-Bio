@@ -1,5 +1,5 @@
-class authService {
-    constructor (authRepository) {
+class AuthService {
+    constructor(authRepository) {
         this.authRepository = authRepository;
     }
 
@@ -18,4 +18,4 @@ class authService {
     }
 }
 
-export default authService;
+export default AuthService;

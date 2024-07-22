@@ -10,10 +10,15 @@ const linkService = new LinkService(linkRepository);
 const linkController = new LinkController(linkService);
 
 linkRoutes.post('/:userId', linkController.create);
+
 linkRoutes.get('/', linkController.listAll);
+
 linkRoutes.get('/users/:userId', linkController.listAllByUser);
+
 linkRoutes.get('/:id', linkController.findById);
+
 linkRoutes.put('/:id', linkController.updateLink);
+
 linkRoutes.delete('/:id', linkController.deleteLink);
 
 export default linkRoutes;

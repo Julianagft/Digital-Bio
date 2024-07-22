@@ -1,4 +1,4 @@
-class authController {
+class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
@@ -18,9 +18,7 @@ class authController {
         } catch (error) {
             return response.status(500).json({ message: error.message });
         }
-
-        
     }   
 }
 
-export default authController;
+export default AuthController;
