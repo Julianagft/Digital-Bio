@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import React from 'react';
+import loginService from '@/service/login/loginService';
 
 const LoginPage = () => {
+
+  async function handleLogin() {
+   const response = await loginService("email", "password");
+  }
+  
   return (
     <>
       <div className="flex w-full h-screen">

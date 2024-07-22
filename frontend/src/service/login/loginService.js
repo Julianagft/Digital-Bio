@@ -1,6 +1,6 @@
 import API, { setToken } from "../api.js";
 
-export const login = async (email, password) => {
+export default async function loginService (email, password) {
   try {
     const response = await API.post("/auth/login", { email, password });
     const { auth } = response.data;
