@@ -1,0 +1,29 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API Documentation",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/example": {
+      "get": {
+        "summary": "Exemplo de endpoint",
+        "description": "Retorna um exemplo de resposta",
+        "responses": {
+          "200": {
+            "description": "Resposta de sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Olá, este é um exemplo de resposta!"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
