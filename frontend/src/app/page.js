@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 const LoginPage = () => {
@@ -32,7 +33,7 @@ const LoginPage = () => {
               <button className="border border-[#f97316] text-[#f97316] py-2 px-12 rounded-md">Cadastre-se</button>
             </div>
 
-            <div className="flex justify-center space-x-4 mt-2">
+            <div className="flex justify-center space-x-4 mt-3">
               <p className="text-center text-[#000000]">Ou entre com</p>
               <a className="text-[#1e3a8a]" href="#">Facebook</a>
               <a className="text-[#1e3a8a]" href="#">LinkedIn</a>
@@ -40,12 +41,13 @@ const LoginPage = () => {
             </div>
           </div>
         </div>
+
         <div className="w-1/2 bg-[#fff] flex flex-col">
           <nav className="flex justify-center space-x-6 text-[#1e3a8a] p-8">
-            <a href="/" className="font-semibold">Início</a>
-            <a href="/about">Sobre nós</a>
-            <a href="/contact">Contato</a>
-            <a href="#">Tema</a>
+            <Link href="/" className="hover:font-semibold active:underline active:font-bold">Início</Link>
+            <Link href="/about" className="hover:font-semibold active:underline active:font-bold" >Sobre nós</Link>
+            <Link href="/contact" className="hover:font-semibold active:underline active:font-bold">Contato</Link>
+            <Link href="#" className="hover:font-semibold active:underline active:font-bold">Tema</Link>
           </nav>
           <div className="flex flex-grow justify-center items-center">
             <img
