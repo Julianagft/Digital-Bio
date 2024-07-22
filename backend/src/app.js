@@ -1,11 +1,11 @@
-import express from 'express';
-import authMiddleware from './middleware/authMiddleware.js';
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import linkRoutes from './routes/linkRoutes.js';
-import cors from 'cors';
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
+import express from "express";
+import authMiddleware from "./middleware/authMiddleware.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import linkRoutes from "./routes/linkRoutes.js";
+import cors from "cors";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 
 const app = express();
 
@@ -14,33 +14,34 @@ app.use(cors());
 
 const swaggerOptions = {
   swaggerDefinition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Documentação da API',
-      version: '1.0.0',
-      description: 'Descrição da sua API',
+      title: "Documentação da API",
+      version: "1.0.0",
+      description: "API feita para criar uma árvore de links",
     },
     servers: [
       {
-        url: 'http://localhost:8082',
+        url: process.env.SERVER_URL || "http://localhost:8082",
       },
     ],
   },
-  apis: ['./src/routes/*.js'], // Atualize o caminho aqui
+  apis: ["./src/routes/*.js"],
 };
 
-
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.get('/', (req, resp) => {
-  resp.json({ message: 'Rodando com sucesso!' });
+app.get("/", (req, resp) => {
+  resp.json({ message: "Rodando com sucesso!" });
 });
 
-app.use('/auth', authRoutes);
-app.use('/users', authMiddleware, userRoutes);
-app.use('/links', authMiddleware, linkRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", authMiddleware, userRoutes);
+app.use("/links", authMiddleware, linkRoutes);
 
-app.listen(8080, () => {
-  console.log('Estou rodando na porta 8080!');
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`Estou rodando na porta ${PORT}!`);
 });
