@@ -1,5 +1,6 @@
 "use client"
-import createUserService from "@/service/createUser/createUserService";
+import createUserService from "@/service/users/createUser/createUserService";
+import getAllUsersService from "@/service/users/getAllUsers/getAllUsersService";
 import { useState } from "react";
 
 export default function signInPage() {
@@ -9,35 +10,47 @@ export default function signInPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-
     
-    async function handleCreateNewUser (event) {
-
+    async function handleCreateNewUser(event) {
         event.preventDefault();
-
+    
         if (!name || !email || !username || !password) {
-            alert("Preencha todos os campos!");
+          return alert("Preencha todos os campos!");
         }
-
-
+    
+        if (password.length < 8 || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          return alert("A senha deve ter no mínimo 8 caracteres, deve conter pelo menos uma letra maiúscula, um número e um caractere especial (ex: #,*,!...).");
+        }
+    
         try {
-            const response = await createUserService({ name, email, username, password });
-            
-            if (response.error) {
-                return alert("Erro ao criar usuário: " + response.error);
+
+            const users = await getAllUsersService();
+            const emailExists = users.some(user => user.email === email);
+            const usernameExists = users.some(user => user.username === username);
+
+            if (emailExists) {
+                return alert("O email fornecido já está sendo usado por outro usuário.");
             }
 
-            return  alert("Usuário criado com sucesso!", response);
+            if (usernameExists) {
+                return alert("O nome de usuário fornecido já está sendo usado por outro usuário.");
+            }
+
+            await createUserService({ name, email, username, password });
+
+            setName('');
+            setEmail('');
+            setUsername('');
+            setPassword('');
+
+            return alert("Usuário criado com sucesso!");
 
         } catch (error) {
-            if (error.response && error.response.data && error.response.data.error) {
-                return { error: error.response.data.error };
-            }
-    
-            return { error: 'Erro inesperado: ' + (error.message || 'Sem detalhes.') };
+            
+            return alert("Erro ao criar usuário, tente novamente mais tarde!" + error);
+
         }
-        
-    }
+      }
 
 
     return (
