@@ -1,13 +1,34 @@
+"use client"
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import loginService from '@/service/login/loginService';
 
 const LoginPage = () => {
 
-  async function handleLogin() {
-   const response = await loginService("email", "password");
-  }
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  async function handleLogin(event) {
+    event.preventDefault();
   
+    try {
+      const data = await loginService(email, password);
+
+      const token = data.token;
+
+      console.log('Login bem-sucedido:', token);
+
+     localStorage.setItem('token', token);
+
+     router.push('/home');
+
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+    }
+  }
+
   return (
     <>
       <div className="flex w-full h-screen">
@@ -16,36 +37,47 @@ const LoginPage = () => {
           <h1 className="text-4xl font-bold text-[#f97316]">Digital Bio</h1>
           <p className="text-xl font-bold text-[#1e3a8a] mt-2">Sua plataforma de links personalizados</p>
           <p className="text-md text-[#1e3a8a] mt-1">Seja bem-vindo(a)! Faça o login na sua conta.</p>
-          <div className="w-3/4 mt-5">
-            <input
-              type="email"
-              placeholder="Endereço de email"
-              className="w-full px-4 py-2 border rounded-md mb-4"
-            />
-            <input
-              type="password"
-              placeholder="Senha"
-              className="w-full px-4 py-2 border rounded-md mb-4"
-            />
-            <div className="flex justify-between items-center mb-4">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                Lembrar-me
-              </label>
-              <a className="text-[#1e3a8a]" href="#">Esqueceu a senha?</a>
-            </div>
-            <div className="flex justify-between items-center">
-              <button className="bg-[#f97316] text-white py-2 px-12 rounded-md">Entrar</button>
-              <button className="border border-[#f97316] text-[#f97316] py-2 px-12 rounded-md">Cadastre-se</button>
-            </div>
+          <form className="w-3/4 mt-5" onSubmit={handleLogin}>
+            <div className="w-3/4 mt-5">
+              <input
+                className="w-full px-4 py-2 border rounded-md mb-4"
+                type="email"
+                placeholder="Endereço de email"
+                onChange={(e) => setEmail(e.target.value)}
 
-            <div className="flex justify-center space-x-4 mt-3">
-              <p className="text-center text-[#000000]">Ou entre com</p>
-              <a className="text-[#1e3a8a]" href="#">Facebook</a>
-              <a className="text-[#1e3a8a]" href="#">LinkedIn</a>
-              <a className="text-[#1e3a8a]" href="#">Google</a>
+              />
+              <input
+                className="w-full px-4 py-2 border rounded-md mb-4"
+                type="password"
+                placeholder="Senha"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <div className="flex justify-between items-center mb-4">
+                <label className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  Lembrar-me
+                </label>
+                <a className="text-[#1e3a8a]" href="#">Esqueceu a senha?</a>
+              </div>
+              <div className="flex justify-between items-center">
+                <button type='submit' className="bg-[#f97316] text-white py-2 px-12 rounded-md">Entrar</button>
+                <Link href="/signIn">
+                  <button className="border border-[#f97316] text-[#f97316] py-2 px-12 rounded-md">
+                    Cadastre-se
+                  </button>
+                </Link>
+              </div>
+
+              <div className="flex justify-center space-x-4 mt-3">
+                <p className="text-center text-[#000000]">Ou entre com</p>
+                <a className="text-[#1e3a8a]" href="#">Facebook</a>
+                <a className="text-[#1e3a8a]" href="#">LinkedIn</a>
+                <a className="text-[#1e3a8a]" href="#">Google</a>
+              </div>
             </div>
-          </div>
+          </form>
+
+
         </div>
 
         <div className="w-1/2 bg-[#fff] flex flex-col">
@@ -66,6 +98,6 @@ const LoginPage = () => {
       </div>
     </>
   );
-};
+}
 
 export default LoginPage;

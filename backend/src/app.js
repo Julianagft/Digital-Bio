@@ -40,7 +40,7 @@ app.use("/auth", authRoutes);
 app.use("/users", authMiddleware, userRoutes);
 app.use("/links", authMiddleware, linkRoutes);
 
-const PORT = process.env.PORT || 8080;
+const PORT = 8081;
 
 app.listen(PORT, () => {
   console.log(`Estou rodando na porta ${PORT}!`);

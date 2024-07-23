@@ -1,19 +1,22 @@
-import API, { setToken } from "../api.js";
+import API  from "../api.js";
 
 export default async function loginService (email, password) {
+
   try {
-    const response = await API.post("/auth/login", { email, password });
-    const { auth } = response.data;
-    
-    if (auth) {
-      setToken(auth);  
-      console.log("Login bem-sucedido:", auth);
-      return response.data;
-    } else {
-      throw new Error("Autenticação falhou");
-    }
+    const response = await API.post('/auth/login', {
+      email,
+      password,
+    });
+
+    const token = response.data.token;
+
+    API.defaults.headers.common['token'] = token;
+
+    return response.data;
+
   } catch (error) {
-    console.error("Erro ao fazer login:", error);
+
+    console.error('Erro ao fazer login:', error);
     throw error;
   }
 };
