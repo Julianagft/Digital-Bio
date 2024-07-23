@@ -11,7 +11,7 @@ const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
 
-userRoutes.get('/',authMiddleware, userController.listAll);
+userRoutes.get('/', userController.listAll);
 
 userRoutes.post('/', userController.create);
 

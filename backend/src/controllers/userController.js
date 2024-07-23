@@ -4,9 +4,15 @@ class UserController {
   }
 
   create = async (request, response) => {
-    const usuario = request.body;
-    await this.userService.create(usuario);
-    return response.status(200).json(usuario);
+    const user = request.body;
+
+    const result = await this.userService.create(user);
+
+    if (result.error) {
+      return response.status(result.statusCode).json({ error: result.error });
+    }
+
+    return response.status(200).json(user);
   };
 
   listAll = async (request, response) => {

@@ -27,12 +27,15 @@ class AuthRepository {
             throw new Error("Senha incorreta!");
         }
       
-        const payload = { email: email };
+        const payload = { email: email, id: user.id };
         const token = jwt.sign(payload, secretKey, { expiresIn: expirationTime });
       
         return {
-            user: { email: email },
-            auth: token,
+          user: { 
+            email: email,
+            id: user.id,
+          },
+          auth: token,
         };
 
       } catch (error) {

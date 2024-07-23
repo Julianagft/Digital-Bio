@@ -3,6 +3,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import loginService from '@/service/login/loginService';
+import getAllUsersService from '@/service/users/getAllUsers/getAllUsersService';
 
 const LoginPage = () => {
 
@@ -14,6 +15,10 @@ const LoginPage = () => {
     event.preventDefault();
   
     try {
+      const users = await getAllUsersService();
+      const autenticatedUser = users.find(user => user.email === email);
+      const id = autenticatedUser.id;
+      
       const data = await loginService(email, password);
 
       const token = data.token;
@@ -22,7 +27,7 @@ const LoginPage = () => {
 
      localStorage.setItem('token', token);
 
-     router.push('/home');
+     router.push(`/userProfile/${id}`);
 
     } catch (error) {
       console.error('Erro ao fazer login:', error);
