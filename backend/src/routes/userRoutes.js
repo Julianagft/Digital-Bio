@@ -1,4 +1,5 @@
 import express from 'express';
+import authMiddleware from '../middleware/authMiddleware.js';
 import UserRepository from '../repositories/userRepository.js';
 import UserService from '../services/userService.js';
 import UserController from '../controllers/userController.js';
@@ -10,14 +11,14 @@ const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
 
-userRoutes.get('/', userController.listAll);
+userRoutes.get('/',authMiddleware, userController.listAll);
 
 userRoutes.post('/', userController.create);
 
-userRoutes.get('/:id', userController.findById);
+userRoutes.get('/:id',authMiddleware, userController.findById);
 
-userRoutes.put('/:id', userController.updateUser);
+userRoutes.put('/:id',authMiddleware, userController.updateUser);
 
-userRoutes.delete('/:id', userController.deleteUser);
+userRoutes.delete('/:id', authMiddleware, userController.deleteUser);
 
 export default userRoutes;

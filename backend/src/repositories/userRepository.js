@@ -22,7 +22,7 @@ class UserRepository {
       
     create = async (user) => {
         if (!user.name || !user.email || !user.username || !user.password ) {  
-          throw new Error('O usuário deve ter um nome, um email e uma senha.');
+          return { error: 'O usuário deve ter um nome, um email, um nome de usuário e uma senha.'};
         }
     
         if (user.password.length < 8 || !/[A-Z]/.test(user.password) || !/\d/.test(user.password) || !/[!@#$%^&*(),.?":{}|<>]/.test(user.password)) {
@@ -43,7 +43,7 @@ class UserRepository {
         const resp = await prisma.users.create({
           data: user,
         });
-      
+
         return resp;
     };
     
