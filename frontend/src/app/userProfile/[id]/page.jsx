@@ -5,6 +5,8 @@ import getUserByIdService from "@/service/users/getUserById/getUserById.Service"
 
 export default function userProfile ({params}) {
 
+    console.log("params: ", params.id);
+
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -13,7 +15,9 @@ export default function userProfile ({params}) {
         try {
             const response = await getUserByIdService(params.id)
             console.log("response.data: ", response);
-            setUserData(response.data);
+
+            return response
+            // setUserData(response.data);
             setLoading(false)
         } catch (error) {
             console.error('Erro ao buscar dados do usuário:', error);
@@ -25,14 +29,13 @@ export default function userProfile ({params}) {
     }
 }, [params]);
 
-console.log("userData: ", userData);
 
-      if (loading) return <p>Carregando...</p>;
-      if (!userData) return <p>Usuário não encontrado</p>;
+    //   if (loading) return <p>Carregando...</p>;
+    //   if (!userData) return <p>Usuário não encontrado</p>;
 
     return (
         <div>
-            <h1>{userData.name}</h1>
+            <h1></h1>
             <p>oi...</p>
         
         
