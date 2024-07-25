@@ -7,135 +7,98 @@ import API from "@/service/api";
 import getUserByIdService from "@/service/users/getUserById/getUserById.Service";
 import getLinkByUserIdService from "@/service/links/getLinkByUserId/getLinkByUserIdService";
 
-export default function userProfile ({params}) {
+export default function userProfile({ params }) {
 
-  const [userData, setUserData] = useState({});
-  const [linkData, setLinkData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
+    const [userData, setUserData] = useState({});
+    const [linkData, setLinkData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [authenticated, setAuthenticated] = useState(false);
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+        if (token) {
+            API.defaults.headers.common['token'] = token;
+            setAuthenticated(true);
 
-    if (token) {
-      API.defaults.headers.common['token'] = token;
-      setAuthenticated(true);
-
-    } else {
-      setAuthenticated(false);
-      console.error('Token ausente');
-    }
-
-    const fetchUserData = async () => {
-      if (!params.id) {
-            console.error('ID do usuário não encontrado');
-            setLoading(false);
-            return;
+        } else {
+            setAuthenticated(false);
+            console.error('Token ausente');
         }
 
-      try {
-        const response = await getUserByIdService(params.id);
-        setUserData(response);
+        const fetchUserData = async () => {
+            if (!params.id) {
+                console.error('ID do usuário não encontrado');
+                setLoading(false);
+                return;
+            }
 
-      } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+            try {
+                const response = await getUserByIdService(params.id);
+                setUserData(response);
 
-    if (params && params.id) {
-      fetchUserData();
-    }
-  }, [params]);
+            } catch (error) {
+                console.error('Erro ao buscar dados do usuário:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  useEffect(() => {
-    const fetchLinks = async () => {
-        try {
-            const response = await getLinkByUserIdService(params.id);
-            setLinkData(response);
-
-        } catch (error) {
-            console.error("Erro ao buscar links do usuário:", error);
-        } finally {
-            setLoading(false);
+        if (params && params.id) {
+            fetchUserData();
         }
-    };
+    }, [params]);
 
-    fetchLinks();
-}, [params.id]);
+    useEffect(() => {
+        const fetchLinks = async () => {
+            try {
+                const response = await getLinkByUserIdService(params.id);
+                setLinkData(response);
+
+            } catch (error) {
+                console.error("Erro ao buscar links do usuário:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLinks();
+    }, [params.id]);
 
     if (loading) return <p>Carregando...</p>;
 
     return (
         <div className="h-full p-5">
-            <header className="flex justify-between h-1/5 bg-[#fff6e5]">
-                <h1>Digital Bio</h1>
-                <nav className="flex gap-3">
-                    <Link className="hover:underline" href= {`/userLinks/${userData.id}`}>
-                        <p>Meus links</p>
+            <header className="flex justify-between items-center bg-[#fff6e5] p-4">
+                <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
+                <nav className="flex gap-3 text-lg font-semibold text-[#1e3a8a]">
+                    <Link href={`/userProfile`}>
+                        <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
-                    <Link href= "/">
-                        <button>LogOut</button>
+                    <span>|</span>
+                    <Link href= {`/userLinks/${params.id}`}>
+                        <p className="hover:underline cursor-pointer">Meus links</p>
                     </Link>
                 </nav>
-
             </header>
 
-            <div className="bg-white h-4/5 flex flex-col gap-14">
-                <div className="pt-6 text-center">
-                    <h2>Seja bem vindo(a) {userData.name}</h2>
-                    <p className="text-gray-400">{userData.username}</p>
-                </div>
-                <div className="flex flex-col justify-center items-center">
-                    {linkData.length === 0 ? (
-                    <p>Você ainda não possui nenhum link cadastrado.</p>
-                    ) : (
-                        linkData.map((link) => {
-                            const formattedUrl = link.url.startsWith('http') ? link.url : `http://${link.url}`;
-
-                            return (
-                                <div key={link.id} className="flex justify-between
-                                border-[1px] border-gray-400 mb-6 py-5 px-4 w-[60%]">
-                                    <div>
-                                        <p className="text-[#1e3a8a] font-medium">{link.title}</p>
-                                        <a
-                                            target="_blank"
-                                            href={formattedUrl}
-                                            rel="noopener noreferrer"
-                                        >
-                                            <p className="text-gray-500">{formattedUrl}</p>
-                                        </a>
-                                    </div>
-
-                                    <div className="flex justify-center gap-3">
-                                        <button onClick={() => setOpen(true)}>
-                                        <Pencil size={25} className="text-[#1e3a8a]" />
-                                        </button>
-                                        <button >
-                                        <Trash size={25} className="text-[#1e3a8a]" />
-                                        </button>
-                                    </div>
-
-
-                                    <ModalComponent
-                                    open={open}
-                                    handleClose={() => setOpen(false)}
-                                    >
-
-                                    </ModalComponent>
-                                
-                                </div>
-
-                            )     
-                        })
-                    )}
+            <div className="bg-white h-4/5 flex flex-col items-center justify-center">
+                <div className="mt-10 w-full max-w-lg">
+                    <label className="block text-gray-700">Digite aqui o título do seu perfil</label>
+                    <input type="text" className="w-full p-2 border border-gray-300 rounded mt-2" />
                 </div>
 
+                <div className="mt-6 w-full max-w-lg">
+                    <label className="block text-gray-700">Adicione aqui uma descrição do seu perfil</label>
+                    <textarea className="w-full p-2 border border-gray-300 rounded mt-2"></textarea>
+                </div>
+
+                <div className="mt-10 flex gap-4">
+                    <button className="bg-orange-500 text-white px-6 py-2 rounded">Salvar Alterações</button>
+                    <button className="bg-orange-500 text-white px-6 py-2 rounded">Ver Página de Links</button>
+                </div>
             </div>
-    
         </div>
-    )
+    );
 }
