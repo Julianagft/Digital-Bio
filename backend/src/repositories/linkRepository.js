@@ -2,8 +2,8 @@ import { prisma } from "../config/prisma.js";
 
 class LinkRepository {
   create = async (link) => {
-    if (!link.url || !link.title || link.isActive === undefined || link.isPublic === undefined || !link.userId ) {  
-      throw new Error("O link deve ter uma URL válida, um título, um status ativo, um status público, e um userId.");
+    if (!link.url || !link.title || link.isActive === undefined || link.isPublic === undefined || !link.userId ) {
+      return { error: "O link deve ter uma URL válida, um título, um status ativo, um status público, e um userId." };    
     }
     
     return await prisma.links.create({

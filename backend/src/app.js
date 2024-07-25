@@ -38,7 +38,7 @@ app.get("/", (req, resp) => {
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
-app.use("/links", authMiddleware, linkRoutes);
+app.use("/links", linkRoutes);
 
 const PORT = 8081;
 
