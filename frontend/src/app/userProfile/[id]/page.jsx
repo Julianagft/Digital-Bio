@@ -77,7 +77,7 @@ export default function userProfile({ params }) {
                         <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
                     <span>|</span>
-                    <Link href="/userLinks">
+                    <Link href= {`/userLinks/${params.id}`}>
                         <p className="hover:underline cursor-pointer">Meus links</p>
                     </Link>
                 </nav>
