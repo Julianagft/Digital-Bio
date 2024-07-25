@@ -84,15 +84,6 @@ export default function userProfile({ params }) {
             </header>
 
             <div className="bg-white h-4/5 flex flex-col items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                        {/* Profile Picture Placeholder */}
-                        <p className="text-6xl text-gray-400">👤</p>
-                    </div>
-                    <button className="bg-orange-500 text-white px-4 py-2 rounded">Carregar foto</button>
-                    <button className="text-red-500 border border-red-500 px-4 py-2 rounded">Remover foto</button>
-                </div>
-
                 <div className="mt-10 w-full max-w-lg">
                     <label className="block text-gray-700">Digite aqui o título do seu perfil</label>
                     <input type="text" className="w-full p-2 border border-gray-300 rounded mt-2" />
