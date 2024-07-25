@@ -73,7 +73,7 @@ export default function userProfile({ params }) {
             <header className="flex justify-between items-center bg-[#fff6e5] p-4">
                 <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
                 <nav className="flex gap-3 text-lg font-semibold text-[#1e3a8a]">
-                    <Link href={`/userLinks/${userData.id}`}>
+                    <Link href={`/userProfile`}>
                         <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
                     <span>|</span>
