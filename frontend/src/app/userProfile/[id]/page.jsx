@@ -71,18 +71,19 @@ export default function userProfile ({params}) {
 
     return (
         <div className="h-full p-5">
-            <header className="flex justify-between h-1/5 bg-[#fff6e5]">
-                <h1>Digital Bio</h1>
-                <nav className="flex gap-3">
-                    <Link className="hover:underline" href= {`/userLinks/${userData.id}`}>
-                        <p>Meus links</p>
+
+            <header className="flex justify-between h-1/5 items-center bg-[#fff6e5] p-4">
+                <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
+                <nav className="flex gap-3 text-lg font-semibold text-[#1e3a8a]">
+                    <Link href={`/userProfile`}>
+                        <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
-                    <Link href= "/">
-                        <button>LogOut</button>
+                    <span>|</span>
+                    <Link href= {`/userLinks/${params.id}`}>
+                        <p className="hover:underline cursor-pointer">Meus links</p>
                     </Link>
                 </nav>
-
-            </header>
+            </header>   
 
             <div className="bg-white h-4/5 flex flex-col gap-14">
                 <div className="pt-6 text-center">
