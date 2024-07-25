@@ -8,5 +8,10 @@ const API = axios.create({
   }
 });
 
+const token = localStorage.getItem('token');
+if (token) {
+  API.defaults.headers.common["token"] = token;
+}
+
 
 export default API;

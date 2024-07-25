@@ -10,7 +10,7 @@ export default async function loginService (email, password) {
 
     const token = response.data.token;
 
-    API.defaults.headers.common['token'] = token;
+    API.defaults.headers.common["token"] = token;
 
     return response.data;
 

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import loginService from '@/service/login/loginService';
 import getAllUsersService from '@/service/users/getAllUsers/getAllUsersService';
+import API from '@/service/api';
 
 const LoginPage = () => {
 
@@ -23,10 +24,10 @@ const LoginPage = () => {
 
       const token = data.token;
 
-      console.log('Login bem-sucedido:', token);
-
      localStorage.setItem('token', token);
-
+    
+     API.defaults.headers.common['Authorization'] = token;
+     
      router.push(`/userProfile/${id}`);
 
     } catch (error) {
