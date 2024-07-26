@@ -28,8 +28,32 @@ export default function userLinksPage() {
                 </nav>
             </header>
 
-            <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mt-6 flex flex-col items-center">             
-                
+            <div className="w-full h-auto max-w-4xl bg-white shadow-md rounded-lg p-6 mt-6 flex flex-col items-center">
+                <div className="w-full max-w-md mb-6">
+                    <label className="block text-gray-700 font-semibold mb-2">Digite aqui o título</label>
+                    <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded"
+                        value={newLinkTitle}
+                        onChange={(e) => setNewLinkTitle(e.target.value)}
+                    />
+                </div>
+
+                <div className="w-full max-w-md mb-6">
+                    <label className="block text-gray-700 font-semibold mb-2">Digite aqui a URL do link</label>
+                    <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded"
+                        value={newLinkUrl}
+                        onChange={(e) => setNewLinkUrl(e.target.value)}
+                    />
+                </div>
+
+                <button
+                    className="bg-orange-500 text-white px-8 py-3 rounded-full mb-4"
+                >
+                    ADICIONAR NOVO LINK
+                </button>
                 <p className="text-gray-500">Clique no botão acima para adicionar um link</p>
 
                 <div className="w-full max-w-md mt-8">
