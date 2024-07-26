@@ -6,12 +6,15 @@ import ModalComponent from "@/components/Modal/ModalComponent";
 import CardWrapper from "@/components/CardWrapper/CardWrapper";
 import API from "@/service/api";
 import getUserByIdService from "@/service/users/getUserById/getUserById.Service";
-import getLinkByUserIdService from "@/service/links/getLinkByUserId/getLinkByUserIdService";
+import getLinkByUserIdService from "@/service/links/getLinksByUserIdServicejs/getLinkByUserIdService";
+import createLinkService from "@/service/links/createLinkService/createLinkService";
 
 export default function userProfile ({params}) {
 
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
+  const [newLinkTitle, setNewLinkTitle] = useState("");
+  const [newLinkUrl, setNewLinkUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -68,6 +71,28 @@ export default function userProfile ({params}) {
     fetchLinks();
 }, [params.id]);
 
+async function handleCreateLink() {
+    if (!newLinkTitle || !newLinkUrl) {
+        return alert("Título e URL são necessários");    
+      }
+
+    try {
+        const linkData = {
+            title: newLinkTitle,
+            url: newLinkUrl,
+          };
+
+        const createdLink  = await createLinkService(params.id, linkData);
+        console.log("createdLink: ", createdLink)
+        setLinkData([...linkData, createdLink]); 
+        setNewLinkTitle(''); 
+        setNewLinkUrl('');  
+
+    } catch (error) {
+        console.error("Erro ao criar link:", error);
+    }
+}
+
     if (loading) return <p>Carregando...</p>;
 
     return (
@@ -99,7 +124,9 @@ export default function userProfile ({params}) {
                             <input
                                 type="text"
                                 className="w-full p-3 border border-gray-300 rounded"
-                            // onChange={(e) => setNewLinkTitle(e.target.value)}
+                                value={newLinkTitle}
+                                placeholder="Título do link"
+                                onChange={(e) => setNewLinkTitle(e.target.value)}
                             />
                         </div>
 
@@ -108,11 +135,15 @@ export default function userProfile ({params}) {
                             <input
                                 type="text"
                                 className="w-full p-3 border border-gray-300 rounded"
-                            // onChange={(e) => setNewLinkUrl(e.target.value)}
+                                value={newLinkUrl}
+                                onChange={(e) => setNewLinkUrl(e.target.value)}
                             />
                         </div>
 
-                        <button className="bg-orange-500 text-white px-8 py-3 rounded-full mb-4">
+                        <button 
+                            className="bg-orange-500 text-white px-8 py-3 rounded-full mb-4"
+                            onClick={handleCreateLink}
+                        >
                             ADICIONAR NOVO LINK
                         </button>
                     </div>

@@ -9,7 +9,7 @@ const API = axios.create({
   }
 });
 
-const token = localStorage.getItem('token');
+const token = typeof localStorage !== "undefined" ? localStorage.getItem('token') : null;
 if (token) {
   API.defaults.headers.common["token"] = token;
 }
