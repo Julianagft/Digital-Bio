@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash, Pencil } from "phosphor-react";
+import { Pagination, } from '@mui/material';
 import ModalComponent from "@/components/Modal/ModalComponent";
+import Toggle from "@/components/Toggle/Toggle";
 import CardWrapper from "@/components/CardWrapper/CardWrapper";
 import API from "@/service/api";
 import getUserByIdService from "@/service/users/getUserById/getUserById.Service";
@@ -14,11 +16,16 @@ export default function userProfile ({params}) {
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
   const [newLinkTitle, setNewLinkTitle] = useState("");
+
   const [newLinkUrl, setNewLinkUrl] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const [open, setOpen] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
-
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -77,16 +84,27 @@ async function handleCreateLink() {
       }
 
     try {
+
+        const isActiveFinal = isPublic ? true : isActive;
+
         const linkData = {
-            title: newLinkTitle,
             url: newLinkUrl,
+            title: newLinkTitle,
+            isActive: isActiveFinal,
+            isPublic: isPublic,
+            userId: Number(params.id),
           };
 
         const createdLink  = await createLinkService(params.id, linkData);
+        alert("Link criado com sucesso!");
         console.log("createdLink: ", createdLink)
         setLinkData([...linkData, createdLink]); 
-        setNewLinkTitle(''); 
+        console.log("linkData: ", linkData, "createdLink: ", createdLink);
         setNewLinkUrl('');  
+        setNewLinkTitle('');
+        setIsActive(false); 
+        setIsPublic(false);
+        
 
     } catch (error) {
         console.error("Erro ao criar link:", error);
@@ -94,6 +112,15 @@ async function handleCreateLink() {
 }
 
     if (loading) return <p>Carregando...</p>;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentLinks = linkData.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(linkData.length / itemsPerPage);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+      };
 
     return (
         <div className="h-full p-5">
@@ -112,8 +139,8 @@ async function handleCreateLink() {
 
             <CardWrapper>
 
-                <div className="bg-white h-4/5 flex flex-col gap-14">
-                    <div className="pt-6 text-center">
+                <div className="bg-white h-4/5 flex flex-col justify-center items-center">
+                    <div className="pt-6 text-center mb-4">
                         <h2>Seja bem vindo(a) {userData.name}</h2>
                         <p className="text-gray-400">{userData.username}</p>
                     </div>
@@ -140,6 +167,11 @@ async function handleCreateLink() {
                             />
                         </div>
 
+                        <div className="w-[450px] flex justify-start gap-2 px-2 mb-5">
+                            <p className="font-bold">Público ?</p>&nbsp;<p>{isPublic ? "Sim" : "Não"}</p> &nbsp;
+                            <Toggle checked={isPublic} onChange={(event) => setIsPublic(event)}/>
+                        </div>
+
                         <button 
                             className="bg-orange-500 text-white px-8 py-3 rounded-full mb-4"
                             onClick={handleCreateLink}
@@ -149,11 +181,11 @@ async function handleCreateLink() {
                     </div>
 
 
-                    <div className="flex flex-col justify-center items-center">
-                        {linkData.length === 0 ? (
+                    <div className="flex flex-col justify-center items-center rounded-md mt-4 shadow-md w-[60vw] p-3 bg-[#fff6e5]">
+                        {currentLinks.length === 0 ? (
                             <p>Você ainda não possui nenhum link cadastrado.</p>
                         ) : (
-                            linkData.map((link) => {
+                            currentLinks.map((link) => {
                                 const formattedUrl = link.url.startsWith('http') ? link.url : `http://${link.url}`;
 
                                 return (
@@ -178,24 +210,27 @@ async function handleCreateLink() {
                                                 <Trash size={25} className="text-[#1e3a8a]" />
                                             </button>
                                         </div>
-
-
-                                        <ModalComponent
-                                            open={open}
-                                            handleClose={() => setOpen(false)}
-                                        >
-
-                                        </ModalComponent>
-
                                     </div>
-
                                 )
                             })
                         )}
+                        <Pagination
+                            sx={{ marginTop: '10px' }}
+                            count={totalPages}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            color="primary"
+                        />
                     </div>
             </div>
-            </CardWrapper>
-    
+            <ModalComponent
+                open={open}
+                handleClose={() => setOpen(false)}
+            >
+
+            </ModalComponent>
+
+            </CardWrapper>    
         </div>
     )
 }

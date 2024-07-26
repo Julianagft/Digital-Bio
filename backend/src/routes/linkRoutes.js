@@ -10,7 +10,7 @@ const linkRepository = new LinkRepository();
 const linkService = new LinkService(linkRepository);
 const linkController = new LinkController(linkService);
 
-linkRoutes.post('/:userId', authMiddleware, linkController.create);
+linkRoutes.post('/:userId', linkController.create);
 
 linkRoutes.get('/', linkController.listAll);
 
