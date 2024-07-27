@@ -232,7 +232,7 @@ export default function userProfile ({params}) {
 
                                 return (
                                     <div key={link.id} className="flex justify-between border-[1px] border-gray-400 mb-6 
-                                    py-5 px-4 w-[60%]">
+                                    py-5 px-4 w-[80%]">
                                         <div>
                                             <p className="text-[#1e3a8a] font-medium">{link.title}</p>
                                             <a

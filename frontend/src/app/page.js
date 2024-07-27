@@ -73,10 +73,10 @@ const LoginPage = () => {
                 </label>
                 <a className="text-[#1e3a8a]" href="#">Esqueceu a senha?</a>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center w-full gap-3">
                 <button type='submit' className="bg-[#f97316] text-white py-2 px-12 rounded-md">Entrar</button>
                 <Link href="/signIn">
-                  <button className="border border-[#f97316] text-[#f97316] py-2 px-12 rounded-md">
+                  <button className="border border-[#f97316] text-[#f97316] py-2 px-5 rounded-md">
                     Cadastre-se
                   </button>
                 </Link>
