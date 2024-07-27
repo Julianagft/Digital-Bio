@@ -1,65 +1,96 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash } from "phosphor-react";
+import LoadingSpinCircle from "@/components/LoadSpinComponent/LoadingSpinCircle";
+import normalizeUrl from "../../../utils/normalizeUrl/normalizeUrl.js"
+import getLinkByUserIdService from "@/service/links/getLinksByUserIdServicejs/getLinkByUserIdService";
+import { Pagination } from "@mui/material";
 
-export default function userLinksPage() {
+export default function userLinksPage({ params }) {
+    const [loading, setLoading] = useState(false);
 
-    const [newLinkTitle, setNewLinkTitle] = useState("");
-    const [newLinkUrl, setNewLinkUrl] = useState("");
-    const [linkData, setLinkData] = useState([
-        { id: 1, title: "Título do link 1", url: "https://www.exemplo.com.br/link1" },
-        { id: 2, title: "Título do link 2", url: "https://www.exemplo.com.br/link2" },
-        { id: 3, title: "Título do link 3", url: "https://www.exemplo.com.br/link3" },
-    ]);
+    const [linkData, setLinkData] = useState([]);
+    const isPublic = linkData.filter((link) => link.isPublic === true);
+
+    const itemsPerPage = 5;
+    const [currentPage, setCurrentPage] = useState(1);
+
+    useEffect(() => {
+        const fetchLinks = async () => {
+            try {
+                const response = await getLinkByUserIdService(params.id);
+                setLinkData(response);
+    
+            } catch (error) {
+                console.error("Erro ao buscar links do usuário:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchLinks();
+    }, [params.id]);
+
+    if (loading) return <LoadingSpinCircle />;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentLinks = isPublic.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(linkData.length / itemsPerPage);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+      };
 
     return (
-        <div className="h-screen w-full flex flex-col items-center bg-[#fff6e5]">
-            <header className="w-full max-w-4xl flex justify-between items-center bg-[#fff6e5] p-6">
+        <div className="w-full flex flex-col justify-center items-center bg-[#fff6e5]">
+            <header className="w-full h-1/5 max-w-4xl flex justify-between items-center bg-[#fff6e5] p-6">
                 <h1 className="text-3xl font-bold text-orange-600">Digital Bio</h1>
                 <nav className="flex gap-4 text-lg font-semibold text-[#1e3a8a]">
-                    <Link href="/userProfile">
+                    <Link href={`/userProfile/${params.id}`}>
                         <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
                     <span>|</span>
-                    <Link href="/userLinks">
+                    <Link href={`/userLinks/${params.id}`}>
                         <p className="hover:underline cursor-pointer">Meus links</p>
                     </Link>
                 </nav>
             </header>
 
-            <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mt-6 flex flex-col items-center">             
-                
-                <p className="text-gray-500">Clique no botão acima para adicionar um link</p>
-
+            <div className="w-full h-4/5 max-w-4xl bg-white shadow-md rounded-lg p-6 mt-6 flex flex-col justify-center items-center">
                 <div className="w-full max-w-md mt-8">
-                    {linkData.length === 0 ? (
-                        <p>Você ainda não possui nenhum link cadastrado.</p>
-                    ) : (
-                        linkData.map((link) => (
-                            <div
-                                key={link.id}
-                                className="flex justify-between items-center border border-gray-300 rounded-lg p-4 mb-4 shadow-sm"
+                {currentLinks.length === 0 ? (
+                    <p className="text-center text-gray-500 font-semibold">Você ainda não possui nenhum link cadastrado.</p>
+                ) : (
+                    currentLinks.map((link) => {
+                        const formattedUrl = normalizeUrl(link.url);
+
+                        return (                            
+                            <a
+                            target="_blank"
+                            href={formattedUrl}
+                            rel="noopener noreferrer"
+                            className="hover:cursor-pointer"
                             >
-                                <div>
-                                    <p className="text-[#1e3a8a] font-semibold">{link.title}</p>
-                                    <a
-                                        target="_blank"
-                                        href={link.url.startsWith('http') ? link.url : `http://${link.url}`}
-                                        rel="noopener noreferrer"
-                                        className="text-gray-500"
-                                    >
-                                        {link.url}
-                                    </a>
+                                <div key={link.id} className="flex justify-center border-[1px] border-gray-400 rounded-md mb-6 py-5 px-4 w-[100%] hover:shadow-lg hover:cursor-pointer">                            
+                                    <p className="text-[#1e3a8a] text-center font-medium">{link.title}</p>
                                 </div>
-                                <button>
-                                    <Trash size={25} className="text-[#1e3a8a]" />
-                                </button>
-                            </div>
-                        ))
-                    )}
+                            </a>
+                        )
+                    })
+                )}
+                <div className="flex justify-center w-full h-auto">
+                    <Pagination
+                        sx={{ marginTop: '10px' }}
+                        count={totalPages}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
+                    />
+                </div>
                 </div>
             </div>
+            { loading && <LoadingSpinCircle /> }
         </div>
     );
 }
