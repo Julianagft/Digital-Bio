@@ -1,66 +1,74 @@
 "use client"
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Trash, Pencil } from "phosphor-react";
+import { Trash, Pencil, X } from "phosphor-react";
 import { Pagination, } from '@mui/material';
-import ModalComponent from "@/components/Modal/ModalComponent";
-import Toggle from "@/components/Toggle/Toggle";
+import LoadingSpinCircle from "@/components/LoadSpinComponent/LoadingSpinCircle";
+import ModalDeleteLink from "@/components/Modal/ModalDeleteLink";
+import ModalCreateLink from "@/components/Modal/ModalCreateLink";
 import CardWrapper from "@/components/CardWrapper/CardWrapper";
+import normalizeUrl from "@/utils/normalizeUrl/normalizeUrl";
 import API from "@/service/api";
-import getUserByIdService from "@/service/users/getUserById/getUserById.Service";
+import getUserByIdService from "@/service/users/getUserById/getUserByIdService";
 import getLinkByUserIdService from "@/service/links/getLinksByUserIdServicejs/getLinkByUserIdService";
-import createLinkService from "@/service/links/createLinkService/createLinkService";
+import ModalEditLink from "@/components/Modal/ModalEditLink";
+import toastNotification from "@/components/ToastNotification/ToastNotification";
 
 export default function userProfile ({params}) {
 
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
-  const [newLinkTitle, setNewLinkTitle] = useState("");
+  const [linkId, setLinkId] = useState(null);
 
-  const [newLinkUrl, setNewLinkUrl] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
-  const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      API.defaults.headers.common['token'] = token;
-      setAuthenticated(true);
-
-    } else {
-      setAuthenticated(false);
-      console.error('Token ausente');
-    }
-
-    const fetchUserData = async () => {
-      if (!params.id) {
-            console.error('ID do usuário não encontrado');
-            setLoading(false);
-            return;
-        }
-
-      try {
+  async function findUserLogged () {
+    try {
         const response = await getUserByIdService(params.id);
+        console.log("response: ", response);
         setUserData(response);
 
+    } catch (error) {
+        console.error("Não foi possível encontrar dados do usuário", error);
+    }
+  }
+
+  useEffect(() => {
+    async function initialize() {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+            findUserLogged();
+        } else {
+            throw new Error('Token ausente');
+        }
+        
+        API.defaults.headers.common['token'] = token;
+        setAuthenticated(true);
+
+
       } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
+        console.error('Usuário não autenticado:', error);
+        setAuthenticated(false);
+        router.push('/'); 
       } finally {
         setLoading(false);
       }
-    };
-
-    if (params && params.id) {
-      fetchUserData();
     }
-  }, [params]);
+
+    initialize();
+  }, [router]);
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -78,40 +86,95 @@ export default function userProfile ({params}) {
     fetchLinks();
 }, [params.id]);
 
-async function handleCreateLink() {
-    if (!newLinkTitle || !newLinkUrl) {
-        return alert("Título e URL são necessários");    
-      }
+    if (!authenticated) return null;
 
+  async function handleLogOut() {
     try {
-
-        const isActiveFinal = isPublic ? true : isActive;
-
-        const linkData = {
-            url: newLinkUrl,
-            title: newLinkTitle,
-            isActive: isActiveFinal,
-            isPublic: isPublic,
-            userId: Number(params.id),
-          };
-
-        const createdLink  = await createLinkService(params.id, linkData);
-        alert("Link criado com sucesso!");
-        console.log("createdLink: ", createdLink)
-        setLinkData([...linkData, createdLink]); 
-        console.log("linkData: ", linkData, "createdLink: ", createdLink);
-        setNewLinkUrl('');  
-        setNewLinkTitle('');
-        setIsActive(false); 
-        setIsPublic(false);
-        
-
+      delete API.defaults.headers.common['token'];
+      localStorage.removeItem('token');
+      setAuthenticated(false);
+      router.push('/');
     } catch (error) {
-        console.error("Erro ao criar link:", error);
+        toastNotification({
+            message: "Erro ao fazer logout",
+            icon: <X size={18} weight="bold" className="text-red-500"/>,
+        });
+      console.error(error);
     }
-}
+  }
 
-    if (loading) return <p>Carregando...</p>;
+
+    const handleOpenDeleteLinkModal = (linkId) => {
+        setLinkId(linkId);
+        setOpenDelete(true)
+    }
+
+    const handleOpenEditModal = (linkId) => {
+        setLinkId(linkId);
+        setOpenEdit(true)
+    }
+
+    const handleCloseDeleteModal = () => {
+        setOpenDelete(false);
+        setLinkId(null);
+    } 
+
+    const handleCloseEditModal = () => {
+        setOpenEdit(false);
+        setLinkId(null);
+    } 
+
+    const handleCloseCreateModal = () => {
+        setOpenCreate(false);
+        setLinkId(null);
+    } 
+
+    const handleDeleteSuccess = async () => {
+        try {
+            const response = await getLinkByUserIdService(params.id);
+            setLinkData(response);
+            alert("Link deletado com sucesso!");
+            handleCloseDeleteModal(); 
+          } catch (error) {
+            toastNotification({
+                message: "Erro ao deletar link",
+                icon: <X size={18} weight="bold" className="text-red-500"/>,
+            });
+            console.error('Erro ao buscar link após exclusão:', error);
+          }
+    };
+
+    const handleEditSuccess = async () => {
+        try {
+            const response = await getLinkByUserIdService(params.id);
+            setLinkData(response);
+            alert("Link alterado com sucesso!");
+            handleCloseDeleteModal(); 
+          } catch (error) {
+            toastNotification({
+                message: "Erro ao atualizar link",
+                icon: <X size={18} weight="bold" className="text-red-500"/>,
+            });
+            console.error('Erro ao editar link:', error);
+          }
+    };
+
+    const handleCreateSuccess = async () => {
+        try {
+            const response = await getLinkByUserIdService(params.id);
+            setLinkData(response);
+            handleCloseCreateModal(); 
+          } catch (error) {
+            toastNotification({
+                message: "Erro ao criar Link",
+                icon: <X size={18} weight="bold" className="text-red-500"/>,
+            });
+            setIsLoading(false);
+            console.error('Erro ao criar link:', error);
+          }
+    };
+
+    if (loading) return <LoadingSpinCircle />;
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -122,10 +185,14 @@ async function handleCreateLink() {
         setCurrentPage(value);
       };
 
+
     return (
         <div className="h-full p-5">
             <header className="flex justify-between h-1/5 items-center bg-[#fff6e5] p-4">
-                <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
+                    <button onClick={handleLogOut} className="text-gray-500 text-base hover:underline hover:cursor-pointer">Log Out</button>
+                </div>
                 <nav className="flex gap-3 text-lg font-semibold text-[#1e3a8a]">
                     <Link href={`/userProfile`}>
                         <p className="hover:underline cursor-pointer">Perfil</p>
@@ -146,35 +213,10 @@ async function handleCreateLink() {
                     </div>
 
                     <div className="w-full flex flex-col justify-center items-center">
-                        <div className="w-full max-w-md mb-6">
-                            <label className="block text-gray-700 font-semibold mb-2">Digite aqui o título</label>
-                            <input
-                                type="text"
-                                className="w-full p-3 border border-gray-300 rounded"
-                                value={newLinkTitle}
-                                placeholder="Título do link"
-                                onChange={(e) => setNewLinkTitle(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="w-full max-w-md mb-6">
-                            <label className="block text-gray-700 font-semibold mb-2">Digite aqui a URL do link</label>
-                            <input
-                                type="text"
-                                className="w-full p-3 border border-gray-300 rounded"
-                                value={newLinkUrl}
-                                onChange={(e) => setNewLinkUrl(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="w-[450px] flex justify-start gap-2 px-2 mb-5">
-                            <p className="font-bold">Público ?</p>&nbsp;<p>{isPublic ? "Sim" : "Não"}</p> &nbsp;
-                            <Toggle checked={isPublic} onChange={(event) => setIsPublic(event)}/>
-                        </div>
-
+                        
                         <button 
                             className="bg-orange-500 text-white px-8 py-3 rounded-full mb-4"
-                            onClick={handleCreateLink}
+                            onClick={() => setOpenCreate(true)}
                         >
                             ADICIONAR NOVO LINK
                         </button>
@@ -186,11 +228,11 @@ async function handleCreateLink() {
                             <p>Você ainda não possui nenhum link cadastrado.</p>
                         ) : (
                             currentLinks.map((link) => {
-                                const formattedUrl = link.url.startsWith('http') ? link.url : `http://${link.url}`;
+                                const formattedUrl = normalizeUrl(link.url);
 
                                 return (
-                                    <div key={link.id} className="flex justify-between
-                                border-[1px] border-gray-400 mb-6 py-5 px-4 w-[60%]">
+                                    <div key={link.id} className="flex justify-between border-[1px] border-gray-400 mb-6 
+                                    py-5 px-4 w-[60%]">
                                         <div>
                                             <p className="text-[#1e3a8a] font-medium">{link.title}</p>
                                             <a
@@ -203,10 +245,10 @@ async function handleCreateLink() {
                                         </div>
 
                                         <div className="flex justify-center gap-3">
-                                            <button onClick={() => setOpen(true)}>
+                                            <button onClick={() => handleOpenEditModal(link.id)}>
                                                 <Pencil size={25} className="text-[#1e3a8a]" />
                                             </button>
-                                            <button >
+                                            <button onClick={() => handleOpenDeleteLinkModal(link.id)} >
                                                 <Trash size={25} className="text-[#1e3a8a]" />
                                             </button>
                                         </div>
@@ -222,14 +264,35 @@ async function handleCreateLink() {
                             color="primary"
                         />
                     </div>
+                    <ModalCreateLink
+                        open={openCreate}
+                        setOpen={setOpenCreate}
+                        userData={userData}
+                        handleClose={handleCloseCreateModal}
+                        handleCreateSuccess={handleCreateSuccess}
+                    />
+
+                    <ModalEditLink
+                        open={openEdit}
+                        setOpen={setOpenEdit}
+                        userData={userData}
+                        linkData={linkData}
+                        linkId={linkId}
+                        setLinkData={setLinkData}
+                        handleClose={handleCloseEditModal}
+                        handleEditSuccess={handleEditSuccess}
+                    />
+
+                    <ModalDeleteLink
+                        open={openDelete}
+                        setOpen={setOpenDelete}
+                        linkId={linkId}
+                        handleClose={handleCloseDeleteModal}
+                        handleDeleteSuccess={handleDeleteSuccess}
+                    />
             </div>
-            <ModalComponent
-                open={open}
-                handleClose={() => setOpen(false)}
-            >
-
-            </ModalComponent>
-
+            
+            { loading && <LoadingSpinCircle /> }
             </CardWrapper>    
         </div>
     )
