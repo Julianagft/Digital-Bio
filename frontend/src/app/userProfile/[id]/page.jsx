@@ -1,7 +1,8 @@
 "use client"
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Trash, Pencil } from "phosphor-react";
+import { Trash, Pencil, X } from "phosphor-react";
 import { Pagination, } from '@mui/material';
 import LoadingSpinCircle from "@/components/LoadSpinComponent/LoadingSpinCircle";
 import ModalDeleteLink from "@/components/Modal/ModalDeleteLink";
@@ -9,8 +10,10 @@ import ModalCreateLink from "@/components/Modal/ModalCreateLink";
 import CardWrapper from "@/components/CardWrapper/CardWrapper";
 import normalizeUrl from "@/utils/normalizeUrl/normalizeUrl";
 import API from "@/service/api";
-import getUserByIdService from "@/service/users/getUserById/getUserById.Service";
+import getUserByIdService from "@/service/users/getUserById/getUserByIdService";
 import getLinkByUserIdService from "@/service/links/getLinksByUserIdServicejs/getLinkByUserIdService";
+import ModalEditLink from "@/components/Modal/ModalEditLink";
+import toastNotification from "@/components/ToastNotification/ToastNotification";
 
 export default function userProfile ({params}) {
 
@@ -19,47 +22,53 @@ export default function userProfile ({params}) {
   const [linkId, setLinkId] = useState(null);
 
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
   const [openDelete, setOpenDelete] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
 
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      API.defaults.headers.common['token'] = token;
-      setAuthenticated(true);
-
-    } else {
-      setAuthenticated(false);
-      console.error('Token ausente');
-    }
-
-    const fetchUserData = async () => {
-      if (!params.id) {
-            console.error('ID do usuário não encontrado');
-            setLoading(false);
-            return;
-        }
-
-      try {
+  async function findUserLogged () {
+    try {
         const response = await getUserByIdService(params.id);
+        console.log("response: ", response);
         setUserData(response);
 
+    } catch (error) {
+        console.error("Não foi possível encontrar dados do usuário", error);
+    }
+  }
+
+  useEffect(() => {
+    async function initialize() {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+            findUserLogged();
+        } else {
+            throw new Error('Token ausente');
+        }
+        
+        API.defaults.headers.common['token'] = token;
+        setAuthenticated(true);
+
+
       } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
+        console.error('Usuário não autenticado:', error);
+        setAuthenticated(false);
+        router.push('/'); 
       } finally {
         setLoading(false);
       }
-    };
-
-    if (params && params.id) {
-      fetchUserData();
     }
-  }, [params]);
+
+    initialize();
+  }, [router]);
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -77,14 +86,41 @@ export default function userProfile ({params}) {
     fetchLinks();
 }, [params.id]);
 
+    if (!authenticated) return null;
+
+  async function handleLogOut() {
+    try {
+      delete API.defaults.headers.common['token'];
+      localStorage.removeItem('token');
+      setAuthenticated(false);
+      router.push('/');
+    } catch (error) {
+        toastNotification({
+            message: "Erro ao fazer logout",
+            icon: <X size={18} weight="bold" className="text-red-500"/>,
+        });
+      console.error(error);
+    }
+  }
+
 
     const handleOpenDeleteLinkModal = (linkId) => {
         setLinkId(linkId);
         setOpenDelete(true)
     }
 
+    const handleOpenEditModal = (linkId) => {
+        setLinkId(linkId);
+        setOpenEdit(true)
+    }
+
     const handleCloseDeleteModal = () => {
         setOpenDelete(false);
+        setLinkId(null);
+    } 
+
+    const handleCloseEditModal = () => {
+        setOpenEdit(false);
         setLinkId(null);
     } 
 
@@ -100,7 +136,26 @@ export default function userProfile ({params}) {
             alert("Link deletado com sucesso!");
             handleCloseDeleteModal(); 
           } catch (error) {
-            console.error('Erro ao buscar links após exclusão:', error);
+            toastNotification({
+                message: "Erro ao deletar link",
+                icon: <X size={18} weight="bold" className="text-red-500"/>,
+            });
+            console.error('Erro ao buscar link após exclusão:', error);
+          }
+    };
+
+    const handleEditSuccess = async () => {
+        try {
+            const response = await getLinkByUserIdService(params.id);
+            setLinkData(response);
+            alert("Link alterado com sucesso!");
+            handleCloseDeleteModal(); 
+          } catch (error) {
+            toastNotification({
+                message: "Erro ao atualizar link",
+                icon: <X size={18} weight="bold" className="text-red-500"/>,
+            });
+            console.error('Erro ao editar link:', error);
           }
     };
 
@@ -110,7 +165,12 @@ export default function userProfile ({params}) {
             setLinkData(response);
             handleCloseCreateModal(); 
           } catch (error) {
-            console.error('Erro ao buscar links após exclusão:', error);
+            toastNotification({
+                message: "Erro ao criar Link",
+                icon: <X size={18} weight="bold" className="text-red-500"/>,
+            });
+            setIsLoading(false);
+            console.error('Erro ao criar link:', error);
           }
     };
 
@@ -125,10 +185,14 @@ export default function userProfile ({params}) {
         setCurrentPage(value);
       };
 
+
     return (
         <div className="h-full p-5">
             <header className="flex justify-between h-1/5 items-center bg-[#fff6e5] p-4">
-                <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-2xl font-bold text-orange-600">Digital Bio</h1>
+                    <button onClick={handleLogOut} className="text-gray-500 text-base hover:underline hover:cursor-pointer">Log Out</button>
+                </div>
                 <nav className="flex gap-3 text-lg font-semibold text-[#1e3a8a]">
                     <Link href={`/userProfile`}>
                         <p className="hover:underline cursor-pointer">Perfil</p>
@@ -181,7 +245,7 @@ export default function userProfile ({params}) {
                                         </div>
 
                                         <div className="flex justify-center gap-3">
-                                            <button >
+                                            <button onClick={() => handleOpenEditModal(link.id)}>
                                                 <Pencil size={25} className="text-[#1e3a8a]" />
                                             </button>
                                             <button onClick={() => handleOpenDeleteLinkModal(link.id)} >
@@ -206,6 +270,17 @@ export default function userProfile ({params}) {
                         userData={userData}
                         handleClose={handleCloseCreateModal}
                         handleCreateSuccess={handleCreateSuccess}
+                    />
+
+                    <ModalEditLink
+                        open={openEdit}
+                        setOpen={setOpenEdit}
+                        userData={userData}
+                        linkData={linkData}
+                        linkId={linkId}
+                        setLinkData={setLinkData}
+                        handleClose={handleCloseEditModal}
+                        handleEditSuccess={handleEditSuccess}
                     />
 
                     <ModalDeleteLink

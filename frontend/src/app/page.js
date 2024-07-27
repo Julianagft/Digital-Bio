@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import loginService from '@/service/login/loginService';
 import getAllUsersService from '@/service/users/getAllUsers/getAllUsersService';
 import API from '@/service/api';
+import toastNotification from '@/components/ToastNotification/ToastNotification';
+import { CheckCircle } from 'phosphor-react';
 
 const LoginPage = () => {
 
@@ -22,7 +24,13 @@ const LoginPage = () => {
       
       const data = await loginService(email, password);
 
+      toastNotification({
+        message: "Login realizado com sucesso",
+        icon: <CheckCircle size={18} weight="bold" className="text-green-500"/>,
+    });
+
       const token = data.token;
+      console.log("token: ", token);
 
      localStorage.setItem('token', token);
     

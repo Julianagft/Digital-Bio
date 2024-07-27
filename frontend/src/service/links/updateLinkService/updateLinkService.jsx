@@ -1,9 +1,11 @@
 import API from "@/service/api";
 
-export default async function createLinkService (userId, linkData) {
+export default async function updateLinkService (id, linkData) {
     try {
-        const response = await API.post(`links/${userId}`, linkData);
+        console.log("Sending link data:", linkData);
 
+        const response = await API.put(`links/${id}`, linkData);        
+        
         return response.data;
         
     } catch (error) {
