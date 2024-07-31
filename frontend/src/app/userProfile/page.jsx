@@ -18,6 +18,8 @@ import toastNotification from "@/components/ToastNotification/ToastNotification"
 
 export default function userProfile ({params}) {
     
+  const { user } = useAuth();
+    console.log("user-pagin-de-perfil: ", user)
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
   const [linkId, setLinkId] = useState(null);

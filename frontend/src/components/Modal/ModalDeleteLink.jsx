@@ -40,8 +40,6 @@ export default function ModalDeleteLink ({open,
     }
     }
 
-    console.log("open: ", open);
-
     return (
         <Modal
         aria-labelledby="transition-modal-title"

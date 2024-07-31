@@ -41,6 +41,8 @@
             return { error: 'Nome de usuário já está sendo utilizado.' };
           }
 
+          user.password = await bcrypt.hash(user.password, 10); 
+
           const resp = await prisma.users.create({
             data: user,
           });

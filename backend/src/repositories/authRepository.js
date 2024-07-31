@@ -1,18 +1,20 @@
-import { prisma } from "../config/prisma.js";
 import { pool } from "../config/db.js";
 import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
+import { prisma } from "../config/prisma.js";
 
 const secretKey = process.env.SECRET_KEY_JWT;
 const expirationTime = process.env.TOKEN_EXPIRATION_TIME;
 
 class AuthRepository {
     async getUserByEmail(email) {
-        const query = {
-          text: 'SELECT * FROM users WHERE email = $1',
-          values: [email]
-        };
-        const result = await pool.query(query);
-        return result.rows.length > 0;
+
+        const result = await prisma.users.findUnique({
+            where: {
+                email: email
+            }
+        });
+        return result;
     }
 
     authenticateUser = async (email, password) => {
@@ -22,10 +24,15 @@ class AuthRepository {
         if (!user) {
             throw new Error("Usuário não encontrado!");
         }
-      
-        if (user.password !== password) {
-            throw new Error("Senha incorreta!");
-        }
+
+        console.log("userSenha: ", user.password)
+        console.log("senhaPassada: ", password)
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+          throw new Error("Senha incorreta!");
+      }
       
         const payload = { email: email, id: user.id };
         const token = jwt.sign(payload, secretKey, { expiresIn: expirationTime });
@@ -39,7 +46,7 @@ class AuthRepository {
         };
 
       } catch (error) {
-        throw new Error("Erro ao autenticar usuário: ", error.message);
+        throw new Error("Erro ao autenticar usuário: " + error.message);
       }
     }
 }

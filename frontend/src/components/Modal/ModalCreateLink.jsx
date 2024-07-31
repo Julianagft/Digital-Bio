@@ -32,7 +32,6 @@ export default function ModalCreateLink ({open,
   const [isPublic, setIsPublic] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
-  console.log("userData: ", userData);
 
     async function handleCreateLink() {
         if (!newLinkTitle || !newLinkUrl) {

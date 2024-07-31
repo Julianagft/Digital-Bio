@@ -8,7 +8,6 @@ export default async function createLinkService (userId, linkData) {
         
     } catch (error) {
         console.error("Error creating link:", error);
-        console.error("Error response:", error.response?.data);
         throw error;
     }
 }
