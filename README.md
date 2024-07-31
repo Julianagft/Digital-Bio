@@ -7,6 +7,8 @@
 
 **Digital Bio** é como o seu cartão de visita digital! Perfeito para quem deseja compartilhar múltiplos links em um único lugar de forma fácil e organizada. Similar a ferramentas como Linktree, nossa plataforma permite que você crie uma bio personalizada com todos os seus links importantes.
 
+Plataforma criada como projeto final do curso FullStack da Digital College. Turma fs-24.
+
 ## Funcionalidades Principais
 
 - **Cadastro de Usuário:** Registre-se com seu nome, e-mail e escolha um nome de usuário único.
@@ -33,71 +35,27 @@
 
 ## Tecnologias Utilizadas
 
-### Obrigatórias
+- **Frontend:** React.js, Next.js, 
+- **Backend:** Node.js com Express.js e JWT (JSON Web Tokens), swagger, Bcrypt;
+- **Banco de Dados:** PostgreSQL, Prisma ORM, Neon Console;
+- **Controle de Versão:** Git;
 
-- **Frontend:** React.js
-- **Backend:** Node.js com Express.js e JWT (JSON Web Tokens)
-- **Banco de Dados:** PostgreSQL
-- **Controle de Versão:** Git
+###  Bibliotecas e frameworks
 
-### Sugeridas
-
-- **Frontend:** Ant Design, Tailwind ou Bootstrap para estilização e componentes
-- **Backend:** Prisma ORM para interação com o banco de dados Postgres
+- **Frontend:** Tailwind, Material UI, Phosphor Icons
 
 ## Como Executar o Projeto
 
 ### Pré-requisitos
 
 - Node.js
-- npm ou yarn
+- npm 
 - PostgreSQL
 - Git
-
-### Configuração do Ambiente de Desenvolvimento
-
-1. **Clone o repositório:**
-   ```sh
-   git clone https://github.com/SEU_USUARIO/projeto-final-fs24.git
-   cd projeto-final-fs24
-   ```
-
-2. **Configuração do Backend:**
-   ```sh
-   cd backend
-   npm install
-   npx prisma generate
-   npx prisma migrate dev --name init
-   ```
-
-3. **Configuração do Frontend:**
-   ```sh
-   cd ../frontend
-   npm install
-   npm start
-   ```
-
-### Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do diretório `backend` com as seguintes variáveis:
-
-```
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/nome_do_banco"
-JWT_SECRET="sua_chave_secreta"
-```
-
-Substitua `usuario`, `senha`, `nome_do_banco` e `sua_chave_secreta` pelos valores apropriados.
-
-## Contribuindo
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas alterações (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
+t
 
 ---
+🔗 Acesse a plataforma:([https://brasil-clima.vercel.app/homePage](https://projeto-final-fs24.vercel.app/))
 
-frontend: https://projeto-final-fs24.vercel.app/
 
-backend: https://projeto-final-fs24.onrender.com/
+backend: [https://projeto-final-fs24.onrender.com/](https://projeto-final-fs24-yqy0.onrender.com/)
