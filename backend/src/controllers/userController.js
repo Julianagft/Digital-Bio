@@ -29,14 +29,14 @@ class UserController {
     const id = request.params.id;
     const newData = request.body;
     const usuarioAtualizado = await this.userService.updateUser(id, newData);
-    return response.json(usuarioAtualizado); 
+    return response.json(usuarioAtualizado);
   };
 
   deleteUser = async (request, response) => {
     const id = request.params.id;
-    await this.userService.deleteUser(id); 
+    await this.userService.deleteUser(id);
     return response.json({ message: "Usuário deletado com sucesso!" });
-  }
+  };
 }
 
 export default UserController;

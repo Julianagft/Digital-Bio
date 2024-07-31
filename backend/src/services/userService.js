@@ -1,11 +1,18 @@
+import bcrypt from "bcrypt";
+
+const cost = 1;
+
 class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
 
   create = async (user) => {
+    user.password = await bcrypt.hash(user.password, cost);
+
     await this.userRepository.create(user);
-    return {message:"Usuário cadastrado com sucesso!", user};
+
+    return { message: "Usuário cadastrado com sucesso!", user };
   };
 
   listAll = async () => {
@@ -20,12 +27,12 @@ class UserService {
 
   updateUser = async (id, newData) => {
     const usuarioAtualizado = await this.userRepository.updateUser(id, newData);
-    return {message: "Usuario atualizado com sucesso!", usuarioAtualizado};
+    return { message: "Usuario atualizado com sucesso!", usuarioAtualizado };
   };
 
   deleteUser = async (id) => {
     await this.userRepository.deleteUser(id);
-    return {message: "Usuário deletado com sucesso!"};
+    return { message: "Usuário deletado com sucesso!" };
   };
 }
 
