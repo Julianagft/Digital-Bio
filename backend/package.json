@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": " nodemon src/app.js"
+    "start": " nodemon src/app.js",
+    "services:up": "docker compose -f src/config/compose.yaml up -d",
+    "services:down": "docker compose -f src/config/compose.yaml down"
   },
   "keywords": [],
   "author": "",

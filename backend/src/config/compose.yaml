@@ -1,0 +1,10 @@
+name: "projeto-final-fs24"
+
+services:
+  postgres_dev:
+    container_name: "postgres-dev"
+    image: postgres:16-alpine3.19
+    env_file:
+      - ../../.env.local
+    ports:
+      - "5432:5432"
