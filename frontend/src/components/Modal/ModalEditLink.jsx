@@ -38,7 +38,6 @@ export default function ModalEditLink ({  open,
   useEffect(() => {
     if (linkId && linkData.length > 0) {
         const linkInformation = linkData.find((link) => link.id === linkId);
-        console.log("linkInformation: ", linkInformation)
 
         if (linkInformation) {
             setUpdatedLinkTitle(linkInformation.title || "");
@@ -48,9 +47,6 @@ export default function ModalEditLink ({  open,
         }
     }
 }, [linkId, linkData]);
-
-  console.log("linkData: ", linkData);
-  console.log("linkId: ", linkId)
 
     async function handleUpdateLink() {
         if (!updatedLinkTitle || !updatedUrl) {

@@ -18,6 +18,8 @@ import toastNotification from "@/components/ToastNotification/ToastNotification"
 
 export default function userProfile ({params}) {
     
+  const { user } = useAuth();
+    console.log("user-pagin-de-perfil: ", user)
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
   const [linkId, setLinkId] = useState(null);
@@ -232,7 +234,7 @@ export default function userProfile ({params}) {
 
                                 return (
                                     <div key={link.id} className="flex justify-between border-[1px] border-gray-400 mb-6 
-                                    py-5 px-4 w-[80%]">
+                                    py-5 px-4 w-[60%]">
                                         <div>
                                             <p className="text-[#1e3a8a] font-medium">{link.title}</p>
                                             <a

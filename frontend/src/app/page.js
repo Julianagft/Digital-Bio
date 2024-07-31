@@ -2,41 +2,33 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/authContext';
 import loginService from '@/service/login/loginService';
-import getAllUsersService from '@/service/users/getAllUsers/getAllUsersService';
-import API from '@/service/api';
 import toastNotification from '@/components/ToastNotification/ToastNotification';
 import { CheckCircle } from 'phosphor-react';
 
-const LoginPage = () => {
+export default function LoginPage () {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   async function handleLogin(event) {
     event.preventDefault();
   
     try {
-      const users = await getAllUsersService();
-      const autenticatedUser = users.find(user => user.email === email);
-      const id = autenticatedUser.id;
-      
+         
       const data = await loginService(email, password);
+      console.log("data: ", data);
+      login(data);
 
       toastNotification({
         message: "Login realizado com sucesso",
         icon: <CheckCircle size={18} weight="bold" className="text-green-500"/>,
     });
 
-      const token = data.token;
-      console.log("token: ", token);
-
-     localStorage.setItem('token', token);
-    
-     API.defaults.headers.common['Authorization'] = token;
-     
-     router.push(`/userProfile/${id}`);
+     router.push(`/userProfile`);
 
     } catch (error) {
       console.error('Erro ao fazer login:', error);
@@ -114,4 +106,3 @@ const LoginPage = () => {
   );
 }
 
-export default LoginPage;

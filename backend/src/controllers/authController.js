@@ -4,10 +4,11 @@ class AuthController {
     }
 
     authenticateUser = async (request, response) => {
-        const { email, token } = request.body;
+    
+        const { email, password } = request.body;
 
         try {
-            const result = await this.authService.authenticateUser(email, token);
+            const result = await this.authService.authenticateUser(email, password);
 
             if (result.error) {
                 return response.status(400).json({ message: result.error });
