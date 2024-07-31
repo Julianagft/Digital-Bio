@@ -55,7 +55,6 @@ Plataforma criada como projeto final do curso FullStack da Digital College. Turm
 t
 
 ---
-🔗 Acesse a plataforma:([https://brasil-clima.vercel.app/homePage](https://projeto-final-fs24.vercel.app/))
+🔗 Acesse a plataforma: ([https://brasil-clima.vercel.app/homePage](https://projeto-final-fs24.vercel.app/))
+🔗 Backend: ([https://projeto-final-fs24.vercel.app/](https://projeto-final-fs24-yqy0.onrender.com/))
 
-
-backend: [https://projeto-final-fs24.onrender.com/](https://projeto-final-fs24-yqy0.onrender.com/)
