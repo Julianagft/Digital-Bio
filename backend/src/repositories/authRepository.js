@@ -1,4 +1,3 @@
-import { pool } from "../config/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import { prisma } from "../config/prisma.js";
@@ -24,9 +23,6 @@ class AuthRepository {
         if (!user) {
             throw new Error("Usuário não encontrado!");
         }
-
-        console.log("userSenha: ", user.password)
-        console.log("senhaPassada: ", password)
 
         const isMatch = await bcrypt.compare(password, user.password);
 
