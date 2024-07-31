@@ -1,14 +1,15 @@
-import express from 'express';
-import AuthRepository from '../repositories/authRepository.js';
-import AuthService from '../services/authService.js';
-import AuthController from '../controllers/authController.js';
+import { Router } from "express";
 
-const authRoutes = express.Router();
+import AuthController from "../controllers/authController.js";
+import AuthService from "../services/authService.js";
+import UserRepository from "../repositories/userRepository.js";
 
-const authRepository = new AuthRepository();
-const authService = new AuthService(authRepository);
+const authRoutes = Router();
+
+const userRepository = new UserRepository();
+const authService = new AuthService(userRepository);
 const authController = new AuthController(authService);
 
-authRoutes.post('/login', authController.authenticateUser);
+authRoutes.post("/login", authController.authenticateUser);
 
 export default authRoutes;

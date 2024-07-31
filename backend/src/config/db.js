@@ -1,8 +1,8 @@
 import pg from "pg";
 
-const {Pool} = pg;
+const { Pool } = pg;
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -13,7 +13,9 @@ export const pool = new Pool({
   database: process.env.DB_NAME,
   max: process.env.DB_MAX,
   min: process.env.DB_MIN,
-  ssl: true,
+  ssl: getSSLValues,
 });
 
-
+function getSSLValues() {
+  return process.env.NODE_ENV === "production" ? true : false;
+}

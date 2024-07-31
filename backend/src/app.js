@@ -5,7 +5,7 @@ import linkRoutes from "./routes/linkRoutes.js";
 import cors from "cors";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
