@@ -4,34 +4,74 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/authContext';
 import loginService from '@/service/login/loginService';
-import toastNotification from '@/components/ToastNotification/ToastNotification';
-import { CheckCircle } from 'phosphor-react';
+import { CheckCircle, WarningCircle, X } from 'phosphor-react';
+  import NotificationComponent from '@/components/NotificationComponent/NotificationComponent';
 
 export default function LoginPage () {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '', 
+  });
+
+
   const router = useRouter();
   const { login } = useAuth();
 
+  const handleClose = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   async function handleLogin(event) {
     event.preventDefault();
-  
+ 
     try {
+
+      if (!email || !password) {
+        setSnackbar({
+          open: true,
+          message: (
+            <div className="flex items-center gap-2">
+              <WarningCircle size={18} weight="bold" className="text-orange-500"/>
+              <span>Preencha os campos de email e senha!</span>
+            </div>
+          ),
+        });
+        return;
+      }
          
       const data = await loginService(email, password);
       console.log("data: ", data);
       login(data);
 
-      toastNotification({
-        message: "Login realizado com sucesso",
-        icon: <CheckCircle size={18} weight="bold" className="text-green-500"/>,
-    });
+      setSnackbar({
+        open: true,
+        message: (
+          <div className="flex items-center gap-2">
+            <CheckCircle size={18} weight="bold" className="text-green-500"/>
+            <span>Login realizado com sucesso!</span>
+          </div>
+        ),
+      });
 
      router.push(`/userProfile`);
 
     } catch (error) {
       console.error('Erro ao fazer login:', error);
+      const errorMessage = error.response?.data?.message
+      setSnackbar({
+        open: true,
+        message: (
+          <div className="flex items-center gap-2">
+            <X size={18} weight="bold" className="text-red-500" />
+            <span>{errorMessage}</span>
+          </div>
+        ),
+      });
     }
   }
 
@@ -51,7 +91,7 @@ export default function LoginPage () {
                 placeholder="Endereço de email"
                 onChange={(e) => setEmail(e.target.value)}
 
-              />
+              />              
               <input
                 className="w-full px-4 py-2 border rounded-md mb-4"
                 type="password"
@@ -102,6 +142,13 @@ export default function LoginPage () {
           </div>
         </div>
       </div>
+
+      <NotificationComponent
+        open={snackbar.open}
+        onClose={handleClose}
+        message={snackbar.message}
+        onClick={handleClose}
+      />
     </>
   );
 }
