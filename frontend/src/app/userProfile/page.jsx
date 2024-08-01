@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/authContext";
-import { Trash, Pencil, X } from "phosphor-react";
+import { Trash, Pencil, X, CheckCircle } from "phosphor-react";
 import { Pagination, } from '@mui/material';
 import LoadingSpinCircle from "@/components/LoadSpinComponent/LoadingSpinCircle";
 import ModalDeleteLink from "@/components/Modal/ModalDeleteLink";
@@ -20,6 +20,7 @@ export default function userProfile () {
     
   const { user } = useAuth();
   const userId = user?.id;
+  console.log("userId: ", userId);
 
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
@@ -35,6 +36,15 @@ export default function userProfile () {
 
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '', 
+  });
+
+  const handleClose = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   async function findUserLogged () {
     try {
@@ -98,14 +108,19 @@ export default function userProfile () {
       setAuthenticated(false);
       router.push('/');
     } catch (error) {
-        // toastNotification({
-        //     message: "Erro ao fazer logout",
-        //     icon: <X size={18} weight="bold" className="text-red-500"/>,
-        // });
-      console.error(error);
+        console.error(error);
+        setSnackbar({
+          open: true,
+          message: (
+            <div className="flex items-center gap-2">
+              <X size={18} weight="bold" className="text-red-500" />
+              <span>Erro ao fazer logOut. Tente novamente mais tarde!</span>
+            </div>
+          ),
+        });
+      
     }
   }
-
 
     const handleOpenDeleteLinkModal = (linkId) => {
         setLinkId(linkId);
@@ -137,13 +152,28 @@ export default function userProfile () {
             const response = await getLinkByUserIdService(userId);
             setLinkData(response);
             alert("Link deletado com sucesso!");
+            setSnackbar({
+                open: true,
+                message: (
+                  <div className="flex items-center gap-2">
+                    <X size={18} weight="bold" className="text-green-500" />
+                    <span>Link deletado com sucesso!</span>
+                  </div>
+                ),
+              });
             handleCloseDeleteModal(); 
           } catch (error) {
-            // toastNotification({
-            //     message: "Erro ao deletar link",
-            //     icon: <X size={18} weight="bold" className="text-red-500"/>,
-            // });
             console.error('Erro ao buscar link após exclusão:', error);
+            setSnackbar({
+                open: true,
+                message: (
+                  <div className="flex items-center gap-2">
+                    <X size={18} weight="bold" className="text-red-500" />
+                    <span>Erro ao deletar link. Tente novamente mais tarde!</span>
+                  </div>
+                ),
+              });
+            
           }
     };
 
@@ -151,14 +181,27 @@ export default function userProfile () {
         try {
             const response = await getLinkByUserIdService(userId);
             setLinkData(response);
-            alert("Link alterado com sucesso!");
+            setSnackbar({
+                open: true,
+                message: (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle size={18} weight="bold" className="text-green-500" />
+                    <span>Link alterado com sucesso!</span>
+                  </div>
+                ),
+              });
             handleCloseDeleteModal(); 
           } catch (error) {
-            // toastNotification({
-            //     message: "Erro ao atualizar link",
-            //     icon: <X size={18} weight="bold" className="text-red-500"/>,
-            // });
             console.error('Erro ao editar link:', error);
+            setSnackbar({
+                open: true,
+                message: (
+                  <div className="flex items-center gap-2">
+                    <X size={18} weight="bold" className="text-red-500" />
+                    <span>Erro ao editar link. Tente novamente mais tarde!</span>
+                  </div>
+                ),
+              });
           }
     };
 
@@ -166,13 +209,27 @@ export default function userProfile () {
         try {
             const response = await getLinkByUserIdService(userId);
             setLinkData(response);
+            setSnackbar({
+                open: true,
+                message: (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle size={18} weight="bold" className="text-green-500" />
+                    <span>Link criado com sucesso!</span>
+                  </div>
+                ),
+              });
             handleCloseCreateModal(); 
           } catch (error) {
-            // toastNotification({
-            //     message: "Erro ao criar Link",
-            //     icon: <X size={18} weight="bold" className="text-red-500"/>,
-            // });
             console.error('Erro ao criar link:', error);
+            setSnackbar({
+                open: true,
+                message: (
+                  <div className="flex items-center gap-2">
+                    <X size={18} weight="bold" className="text-red-500" />
+                    <span>Erro ao criar link. Tente novamente mais tarde!</span>
+                  </div>
+                ),
+              });
           }
     };
 
@@ -290,6 +347,13 @@ export default function userProfile () {
                         linkId={linkId}
                         handleClose={handleCloseDeleteModal}
                         handleDeleteSuccess={handleDeleteSuccess}
+                    />
+
+                    <NotificationComponent
+                        open={snackbar.open}
+                        onClose={handleClose}
+                        message={snackbar.message}
+                        onClick={handleClose}
                     />
             </div>
             

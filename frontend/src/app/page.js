@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/authContext';
 import loginService from '@/service/login/loginService';
 import { CheckCircle, WarningCircle, X } from 'phosphor-react';
-  import NotificationComponent from '@/components/NotificationComponent/NotificationComponent';
+import NotificationComponent from '@/components/NotificationComponent/NotificationComponent';
+import LoadingSpinCircle from '@/components/LoadSpinComponent/LoadingSpinCircle';
 
 export default function LoginPage () {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loadind, setLoading] = useState(false);
 
 
   const [snackbar, setSnackbar] = useState({
@@ -47,6 +49,7 @@ export default function LoginPage () {
       const data = await loginService(email, password);
       console.log("data: ", data);
       login(data);
+      setLoading(true);
 
       setSnackbar({
         open: true,
@@ -73,6 +76,10 @@ export default function LoginPage () {
         ),
       });
     }
+  }
+
+  if (loadind) {
+    return <LoadingSpinCircle />;
   }
 
   return (
