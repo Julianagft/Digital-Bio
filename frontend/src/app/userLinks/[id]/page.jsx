@@ -47,7 +47,7 @@ export default function userLinksPage({ params }) {
             <header className="w-full h-1/5 max-w-4xl flex justify-between items-center bg-[#fff6e5] p-6">
                 <h1 className="text-3xl font-bold text-orange-600">Digital Bio</h1>
                 <nav className="flex gap-4 text-lg font-semibold text-[#1e3a8a]">
-                    <Link href={`/userProfile/${params.id}`}>
+                    <Link href={`/userProfile/`}>
                         <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
                     <span>|</span>

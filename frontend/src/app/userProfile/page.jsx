@@ -14,12 +14,13 @@ import API from "@/service/api";
 import getUserByIdService from "@/service/users/getUserById/getUserByIdService";
 import getLinkByUserIdService from "@/service/links/getLinksByUserIdServicejs/getLinkByUserIdService";
 import ModalEditLink from "@/components/Modal/ModalEditLink";
-import toastNotification from "@/components/ToastNotification/ToastNotification";
+import NotificationComponent from "@/components/NotificationComponent/NotificationComponent";
 
-export default function userProfile ({params}) {
+export default function userProfile () {
     
   const { user } = useAuth();
-    console.log("user-pagin-de-perfil: ", user)
+  const userId = user?.id;
+
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
   const [linkId, setLinkId] = useState(null);
@@ -37,7 +38,7 @@ export default function userProfile ({params}) {
 
   async function findUserLogged () {
     try {
-        const response = await getUserByIdService(params.id);
+        const response = await getUserByIdService(userId);
         setUserData(response);
 
     } catch (error) {
@@ -75,7 +76,7 @@ export default function userProfile ({params}) {
   useEffect(() => {
     const fetchLinks = async () => {
         try {
-            const response = await getLinkByUserIdService(params.id);
+            const response = await getLinkByUserIdService(userId);
             setLinkData(response);
 
         } catch (error) {
@@ -86,7 +87,7 @@ export default function userProfile ({params}) {
     };
 
     fetchLinks();
-}, [params.id]);
+}, [userId]);
 
     if (!authenticated) return null;
 
@@ -97,10 +98,10 @@ export default function userProfile ({params}) {
       setAuthenticated(false);
       router.push('/');
     } catch (error) {
-        toastNotification({
-            message: "Erro ao fazer logout",
-            icon: <X size={18} weight="bold" className="text-red-500"/>,
-        });
+        // toastNotification({
+        //     message: "Erro ao fazer logout",
+        //     icon: <X size={18} weight="bold" className="text-red-500"/>,
+        // });
       console.error(error);
     }
   }
@@ -133,45 +134,44 @@ export default function userProfile ({params}) {
 
     const handleDeleteSuccess = async () => {
         try {
-            const response = await getLinkByUserIdService(params.id);
+            const response = await getLinkByUserIdService(userId);
             setLinkData(response);
             alert("Link deletado com sucesso!");
             handleCloseDeleteModal(); 
           } catch (error) {
-            toastNotification({
-                message: "Erro ao deletar link",
-                icon: <X size={18} weight="bold" className="text-red-500"/>,
-            });
+            // toastNotification({
+            //     message: "Erro ao deletar link",
+            //     icon: <X size={18} weight="bold" className="text-red-500"/>,
+            // });
             console.error('Erro ao buscar link após exclusão:', error);
           }
     };
 
     const handleEditSuccess = async () => {
         try {
-            const response = await getLinkByUserIdService(params.id);
+            const response = await getLinkByUserIdService(userId);
             setLinkData(response);
             alert("Link alterado com sucesso!");
             handleCloseDeleteModal(); 
           } catch (error) {
-            toastNotification({
-                message: "Erro ao atualizar link",
-                icon: <X size={18} weight="bold" className="text-red-500"/>,
-            });
+            // toastNotification({
+            //     message: "Erro ao atualizar link",
+            //     icon: <X size={18} weight="bold" className="text-red-500"/>,
+            // });
             console.error('Erro ao editar link:', error);
           }
     };
 
     const handleCreateSuccess = async () => {
         try {
-            const response = await getLinkByUserIdService(params.id);
+            const response = await getLinkByUserIdService(userId);
             setLinkData(response);
             handleCloseCreateModal(); 
           } catch (error) {
-            toastNotification({
-                message: "Erro ao criar Link",
-                icon: <X size={18} weight="bold" className="text-red-500"/>,
-            });
-            setIsLoading(false);
+            // toastNotification({
+            //     message: "Erro ao criar Link",
+            //     icon: <X size={18} weight="bold" className="text-red-500"/>,
+            // });
             console.error('Erro ao criar link:', error);
           }
     };
@@ -200,7 +200,7 @@ export default function userProfile ({params}) {
                         <p className="hover:underline cursor-pointer">Perfil</p>
                     </Link>
                     <span>|</span>
-                    <Link href= {`/userLinks/${params.id}`}>
+                    <Link href= {`/userLinks/${userId}`}>
                         <p className="hover:underline cursor-pointer">Meus links</p>
                     </Link>
                 </nav>
@@ -235,14 +235,13 @@ export default function userProfile ({params}) {
                                 return (
                                     <div key={link.id} className="flex justify-between border-[1px] border-gray-400 mb-6 
                                     py-5 px-4 w-[60%]">
-                                        <div>
-                                            <p className="text-[#1e3a8a] font-medium">{link.title}</p>
+                                        <div>         
                                             <a
                                                 target="_blank"
                                                 href={formattedUrl}
                                                 rel="noopener noreferrer"
                                             >
-                                                <p className="text-gray-500">{formattedUrl}</p>
+                                                <p className="text-[#1e3a8a] font-medium">{link.title}</p>
                                             </a>
                                         </div>
 

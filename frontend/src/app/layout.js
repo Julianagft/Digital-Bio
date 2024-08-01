@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/context/authContext";
 import "./globals.css";
+import { Slide, ToastContainer } from "react-toastify";
 
 
 const inter = Inter({ subsets: ["latin"] });
