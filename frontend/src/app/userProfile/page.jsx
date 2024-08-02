@@ -47,12 +47,14 @@ export default function userProfile () {
   };
 
   async function findUserLogged () {
-    try {
+    if (userId) {
+      try {
         const response = await getUserByIdService(userId);
         setUserData(response);
 
     } catch (error) {
         console.error("Não foi possível encontrar dados do usuário", error);
+    }
     }
   }
 
