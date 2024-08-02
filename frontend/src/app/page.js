@@ -47,7 +47,6 @@ export default function LoginPage () {
       }
          
       const data = await loginService(email, password);
-      console.log("data: ", data);
       login(data);
       setLoading(true);
 

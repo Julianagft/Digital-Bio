@@ -36,8 +36,8 @@ export default function ModalEditLink ({  open,
   const userId = userData.id;
 
   useEffect(() => {
-    if (linkId && linkData.length > 0) {
-        const linkInformation = linkData.find((link) => link.id === linkId);
+    if (linkId && linkData?.length > 0) {
+        const linkInformation = linkData?.find((link) => link.id === linkId);
 
         if (linkInformation) {
             setUpdatedLinkTitle(linkInformation.title || "");
@@ -57,7 +57,7 @@ export default function ModalEditLink ({  open,
 
             const isActiveFinal = isPublic ? true : isActive;
 
-            const linkData = {
+            const linkNewData = {
                 url: updatedUrl,
                 title: updatedLinkTitle,
                 isActive: isActiveFinal,
@@ -65,7 +65,7 @@ export default function ModalEditLink ({  open,
                 userId: Number(userId),
             };
 
-            const updatedLink = await updateLinkService(linkId, linkData);
+            const updatedLink = await updateLinkService(linkId, linkNewData);
 
             setLinkData(prevLinkData =>
                 prevLinkData.map(link =>
@@ -124,7 +124,7 @@ export default function ModalEditLink ({  open,
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded"
                         value={updatedLinkTitle}
-                        placeholder={linkData.title}
+                        placeholder={linkData?.title}
                         onChange={(e) => setUpdatedLinkTitle(e.target.value)}
                     />
                 </div>

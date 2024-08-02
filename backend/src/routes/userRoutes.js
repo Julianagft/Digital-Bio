@@ -15,10 +15,11 @@ userRoutes.get('/', userController.listAll);
 
 userRoutes.post('/', userController.create);
 
-userRoutes.get('/:id',authMiddleware, userController.findById);
+userRoutes.get('/:id', userController.findById);
 
 userRoutes.put('/:id',authMiddleware, userController.updateUser);
 
 userRoutes.delete('/:id', authMiddleware, userController.deleteUser);
 
 export default userRoutes;
+

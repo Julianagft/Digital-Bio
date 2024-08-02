@@ -20,7 +20,6 @@ export default function userProfile () {
     
   const { user } = useAuth();
   const userId = user?.id;
-  console.log("userId: ", userId);
 
   const [userData, setUserData] = useState({});
   const [linkData, setLinkData] = useState([]);
@@ -58,48 +57,48 @@ export default function userProfile () {
     }
   }
 
+  async function fetchLinks () {
+   if (userId) {
+    try {
+      const response = await getLinkByUserIdService(userId);
+      setLinkData(response);
+
+    } catch (error) {
+      console.error("Erro ao buscar links do usuário:", error);
+
+    } finally {
+      setLoading(false);
+    }
+   }
+  };
+
   useEffect(() => {
     async function initialize() {
-      try {
-        const token = localStorage.getItem('token');
-        
-        if (token) {
-            findUserLogged();
-        } else {
-            throw new Error('Token ausente');
+      if (userId) {
+        try {
+          const token = localStorage.getItem('token');
+          
+          if (token) {
+            API.defaults.headers.common['token'] = token;
+            setAuthenticated(true);
+            await findUserLogged();
+            await fetchLinks();
+          } else {
+              throw new Error('Token ausente');
+          }
+  
+        } catch (error) {
+          console.error('Usuário não autenticado:', error);
+          setAuthenticated(false);
+          router.push('/'); 
+        } finally {
+          setLoading(false);
         }
-        
-        API.defaults.headers.common['token'] = token;
-        setAuthenticated(true);
-
-
-      } catch (error) {
-        console.error('Usuário não autenticado:', error);
-        setAuthenticated(false);
-        router.push('/'); 
-      } finally {
-        setLoading(false);
       }
     }
 
     initialize();
-  }, [router]);
-
-  useEffect(() => {
-    const fetchLinks = async () => {
-        try {
-            const response = await getLinkByUserIdService(userId);
-            setLinkData(response);
-
-        } catch (error) {
-            console.error("Erro ao buscar links do usuário:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    fetchLinks();
-}, [userId]);
+  }, [router, userId]);
 
     if (!authenticated) return null;
 
@@ -107,6 +106,15 @@ export default function userProfile () {
     try {
       delete API.defaults.headers.common['token'];
       localStorage.removeItem('token');
+      setSnackbar({
+        open: true,
+        message: (
+          <div className="flex items-center gap-2">
+            <CheckCircle size={18} weight="bold" className="text-green-500" />
+            <span>Logout realizado com sucesso!</span>
+          </div>
+        ),
+      });
       setAuthenticated(false);
       router.push('/');
     } catch (error) {
@@ -239,8 +247,8 @@ export default function userProfile () {
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentLinks = linkData.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(linkData.length / itemsPerPage);
+    const currentLinks = linkData?.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(linkData?.length / itemsPerPage);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
@@ -285,10 +293,10 @@ export default function userProfile () {
 
 
                     <div className="flex flex-col justify-center items-center rounded-md mt-4 shadow-md w-[60vw] p-3 bg-[#fff6e5]">
-                        {currentLinks.length === 0 ? (
+                        {currentLinks?.length === 0 ? (
                             <p>Você ainda não possui nenhum link cadastrado.</p>
                         ) : (
-                            currentLinks.map((link) => {
+                            currentLinks?.map((link) => {
                                 const formattedUrl = normalizeUrl(link.url);
 
                                 return (
